@@ -32,6 +32,10 @@
 
 ## 使用方式
 
+首次使用建议先阅读：
+
+- `docs/public-quickstart.md`
+
 示例命令：
 
 ```bash
