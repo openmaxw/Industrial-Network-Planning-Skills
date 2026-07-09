@@ -25,6 +25,24 @@
     "concerns": [
       "远程维护治理不足。",
       "实施过程停机窗口有限。"
+    ],
+    "environment": [
+      "部分车间高温且粉尘较大。",
+      "公辅区域存在冷热变化明显的季节性环境。"
+    ],
+    "installation": [
+      "厂房层高较高，桥架路径较长。",
+      "部分汇聚点仅具备就近控制柜安装条件。"
+    ],
+    "emc": [
+      "变频器和大功率电机集中区域存在较强电磁干扰。",
+      "控制柜邻近强电设备，需关注屏蔽与隔离。"
+    ],
+    "physicalDistances": [
+      "厂级机房到部分车间弱电间距离较长。"
+    ],
+    "powerAndGrounding": [
+      "部分弱电间 UPS 与接地条件需现场复核。"
     ]
   },
   "currentNetwork": {
@@ -51,7 +69,9 @@
     ],
     "protocols": ["工业以太网", "应用层业务访问", "远程维护协议"],
     "accessPaths": ["办公到生产访问需受控", "运维到控制访问需收敛"],
-    "remoteMaintenance": ["第三方远程维护需通过受控路径访问指定设备"]
+    "remoteMaintenance": ["第三方远程维护需通过受控路径访问指定设备"],
+    "performance": ["关键控制流量需保持稳定时延", "视频流量不得挤占控制主干链路"],
+    "bandwidthDrivers": ["视频监控上云存档", "SCADA 历史数据集中归档", "远程运维会话并发"]
   },
   "addressing": {
     "existingNetworks": ["现有地址存在复用", "部分车间沿用历史网段"],
@@ -76,12 +96,30 @@
     "segmentation": "建议划分办公区、运维区、DMZ、控制区，并通过受控通道收敛跨区访问。",
     "addressPlan": "按区域和用途组织网段，为新增产线预留地址空间。",
     "deployment": "核心设备集中部署于厂级机房，车间侧部署汇聚与边界控制设备，产线侧部署受控接入设备。",
-    "implementation": "建议按边界治理、结构优化、地址规范化三阶段实施。"
+    "implementation": "建议按边界治理、结构优化、地址规范化三阶段实施。",
+    "topologyRationale": ["核心区采用星型或双上联，车间汇聚区按连续性目标评估小规模环网。"],
+    "redundancyPolicy": ["关键链路与关键边界控制点优先落实冗余，普通接入区保留原则性冗余建议。"],
+    "performancePlan": ["核心与汇聚链路按控制、监控、视频与历史数据叠加峰值留有余量。"],
+    "environmentAdaptation": ["强干扰区优先采用光纤和工业级设备，安装方式结合机柜和桥架条件确定。"]
   },
   "openItems": {
     "missingInformation": ["部分远程维护流量细节未完全掌握"],
     "siteVerification": ["工业防火墙具体部署位置待现场复核"],
     "customerConfirmation": ["冗余范围与审计粒度待客户确认"],
     "designAssumptions": ["默认保留关键历史网段并逐步调整"]
+  },
+  "delivery": {
+    "topologyStructures": [
+      {
+        "id": "TS-01",
+        "zone": "厂房汇聚区",
+        "structure": "小规模环网",
+        "reason": "对象分散且连续生产要求较高。",
+        "size": "每环规模和节点数待现场复核。"
+      }
+    ],
+    "redundancyPlan": ["关键边界防火墙与核心上联链路按高可用目标深化。"],
+    "bandwidthPlan": ["中心主干按千兆/万兆演进留有扩容余量。"],
+    "environmentRequirements": ["高温高粉尘区域设备需满足工业环境等级与 EMC 要求。"]
   }
 }

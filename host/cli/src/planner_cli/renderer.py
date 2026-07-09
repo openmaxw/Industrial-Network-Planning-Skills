@@ -292,6 +292,43 @@ def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, 
             ],
         )]
 
+    if chapter.title == "业务分析与系统协同":
+        flow_rows = []
+        flows = plan.appendix_communications.get("flows") or []
+        for index, item in enumerate(flows[:5], start=1):
+            if isinstance(item, dict):
+                flow_rows.append([
+                    f"BUS-{index:02d}",
+                    str(item.get("name", item.get("scenario", "业务场景"))).strip() or "业务场景",
+                    str(item.get("source", item.get("src", "源对象"))).strip() or "源对象",
+                    str(item.get("target", item.get("dst", "目标对象"))).strip() or "目标对象",
+                    str(item.get("purpose", item.get("goal", "业务目的待补充"))).strip() or "业务目的待补充",
+                ])
+            else:
+                flow_rows.append([f"BUS-{index:02d}", f"业务场景{index}", "相关业务对象", "目标业务对象", str(item).strip() or "业务目的待补充"])
+        if not flow_rows:
+            flow_rows = [
+                ["BUS-01", "核心业务场景", "上层系统", "现场控制对象", "生产控制"],
+                ["BUS-02", "接口服务场景", "接口服务器", "上层管理/报表系统", "受控数据交换与业务协同"],
+                ["BUS-03", "运维访问场景", "运维终端", "授权目标系统", "受控维护与审计留痕"],
+            ]
+        return [(
+            "**业务场景与系统协同表**",
+            ["编号", "业务场景", "源对象", "目标对象", "业务目的"],
+            flow_rows,
+        )]
+
+    if chapter.title == "现场环境与工程约束":
+        return [(
+            "**现场环境约束表**",
+            ["类别", "调研/约束信息", "设计响应"],
+            [
+                ["厂房与安装", facts[0] if facts else "厂房尺寸、层高、机柜和安装位置待结合现场复核。", "用于确定设备安装方式、弱电间布局和主干路由组织。"],
+                ["环境与 EMC", facts[1] if len(facts) > 1 else "温湿度、粉尘、振动、冷热冲击和电磁干扰条件需核实。", "影响工业交换机等级、EMC 能力、屏蔽与隔离方式。"],
+                ["供电与接地", pending[0] if pending else "供电、UPS、接地和保护路径需现场确认。", "决定边界设备、汇聚交换机和远程运维设备的部署前置条件。"],
+            ],
+        )]
+
     if chapter.title == "总体网络架构方案":
         tables = [(
             "**总体架构说明表**",
@@ -313,6 +350,30 @@ def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, 
                 rows,
             ))
         return tables
+
+    if chapter.title == "拓扑结构与冗余设计说明":
+        structures = plan.appendix_delivery.get("topologyStructures") or []
+        rows = []
+        for index, item in enumerate(structures[:4], start=1):
+            if isinstance(item, dict):
+                rows.append([
+                    str(item.get("id", f"TOPO-{index:02d}")),
+                    str(item.get("zone", item.get("scope", "目标区域"))).strip() or "目标区域",
+                    str(item.get("structure", item.get("type", "待确认结构"))).strip() or "待确认结构",
+                    str(item.get("reason", item.get("rationale", "结合可靠性和实施条件定版"))).strip() or "结合可靠性和实施条件定版",
+                    str(item.get("size", item.get("limit", "环网规模与节点数待复核"))).strip() or "环网规模与节点数待复核",
+                ])
+        if not rows:
+            rows = [
+                ["TOPO-01", "核心与中心监控区", "星型 / 双上联", "便于集中纳管、边界收口和单点故障控制。", pending[0] if pending else "核心冗余范围待结合可靠性目标锁定。"],
+                ["TOPO-02", "厂房汇聚区", "小规模环网或双上联", "适用于连续生产且对象分散的区间，但不宜无限扩大环网规模。", pending[1] if len(pending) > 1 else "每环节点数与收敛目标待现场复核。"],
+                ["TOPO-03", "普通接入区", "星型 / 单链受控接入", "适合对象数量有限、停机容忍度较高的普通辅助区。", "按后续扩展需求预留上联与地址空间。"],
+            ]
+        return [(
+            "**拓扑与冗余论证表**",
+            ["编号", "适用区域", "结构选择", "选择原因", "规模/边界说明"],
+            rows,
+        )]
 
     if chapter.title == "IEC62443 分区分域与安全边界设计":
         return [(
@@ -351,6 +412,17 @@ def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, 
                 ["AC-01", "监控采集", "现场对象区", "中心监控区", _first(flows[:2], "现场控制器、网关或子系统经汇聚后上联中心平台。"), "仅放通监控采集所需协议、方向与端口。"],
                 ["AC-02", "跨系统交互", "业务接口区", "监控服务边界区", _first(flows[2:4] + access_paths[:1], "与上层业务交互经应用服务层、接口服务器或受控网关转发。"), _first(access_paths[:2], "跨域通信统一收口，不允许现场对象直接暴露。")],
                 ["AC-03", "运维访问", "运维接入区", "监控区/边界网关", _first(flows[4:] + plan.appendix_communications.get("remoteMaintenance", []), "运维终端与第三方远程维护通过独立运维入口接入。"), pending[0] if pending else _first(access_paths[1:3], "实施前锁定访问白名单。")],
+            ],
+        )]
+
+    if chapter.title == "带宽与性能设计说明":
+        return [(
+            "**带宽与性能说明表**",
+            ["层级/对象", "性能依据", "设计响应"],
+            [
+                ["核心与汇聚上联", facts[0] if facts else "控制、监控、视频、历史数据与运维访问流量叠加后需保留峰值余量。", "主干链路带宽按峰值与扩容预留统一核定，避免后续扩展受限。"],
+                ["广播域与 VLAN", facts[1] if len(facts) > 1 else "广播域规模、跨区访问和地址组织共同影响时延与故障域。", "通过 VLAN、子网和边界收敛控制广播噪声与抖动。"],
+                ["长距离与干扰区间", facts[2] if len(facts) > 2 else "远距离、强干扰和跨厂房链路需重点评估介质与冗余方式。", "优先采用光纤，并按可靠性目标确定单链、双上联或小环结构。"],
             ],
         )]
 
@@ -554,10 +626,13 @@ FORMAL_TITLE_MAP = {
     "项目概述与建设目标": "项目概述",
     "现状网络与调研结论": "现场调研与现状结论",
     "设计依据与方法说明": "设计原则与技术路线",
-    "总体网络架构方案": "总体网络架构方案",
+    "现场环境与工程约束": "现场环境与工程约束",
+    "总体网络架构方案": "网络拓扑与分层设计",
+    "拓扑结构与冗余设计说明": "稳定性与冗余设计",
     "IEC62443 分区分域与安全边界设计": "网络分区与边界控制方案",
     "网络拓扑与通信路径说明": "网络拓扑图",
-    "IP 地址、VLAN 与子网规划": "地址、VLAN 与子网规划",
+    "带宽与性能设计说明": "性能设计与时延分析",
+    "IP 地址、VLAN 与子网规划": "地址分段与 VLAN 规划",
     "关键设备与部署建议": "关键设备部署方案",
     "通信与运维接入方案": "通信与运维接入方案",
     "实施步骤与迁移建议": "实施方案与切换策略",
@@ -566,7 +641,6 @@ FORMAL_TITLE_MAP = {
 }
 
 HIDE_FORMAL_TITLES = {
-    "ISA95 层级建模与系统协同结构",
 }
 
 def _chapter_map(chapters: list[Chapter]) -> dict[str, Chapter]:
@@ -581,9 +655,12 @@ def _formal_ordered_chapters(chapters: list[Chapter]) -> list[Chapter]:
         "设计依据与方法说明",
         "需求与约束分析",
         "技术选择与方案比较",
+        "现场环境与工程约束",
         "总体网络架构方案",
+        "拓扑结构与冗余设计说明",
         "IEC62443 分区分域与安全边界设计",
         "网络拓扑与通信路径说明",
+        "带宽与性能设计说明",
         "IP 地址、VLAN 与子网规划",
         "关键设备与部署建议",
         "通信与运维接入方案",
@@ -595,6 +672,56 @@ def _formal_ordered_chapters(chapters: list[Chapter]) -> list[Chapter]:
     ordered = [by_title[title] for title in ordered_titles if title in by_title]
     extras = [chapter for chapter in chapters if chapter.title not in ordered_titles]
     return ordered + extras
+
+
+COMPACT_SECTION_GROUPS = [
+    ("项目概述与建设范围", ["项目概述与建设目标"]),
+    ("业务分析与系统协同", ["业务分析与系统协同", "ISA95 层级建模与系统协同结构"]),
+    ("调研结论与设计依据", ["现状网络与调研结论", "设计依据与方法说明", "需求与约束分析", "技术选择与方案比较", "现场环境与工程约束"]),
+    ("总体架构与安全设计", ["总体网络架构方案", "IEC62443 分区分域与安全边界设计", "网络拓扑与通信路径说明"]),
+    ("工程设计", ["拓扑结构与冗余设计说明", "带宽与性能设计说明", "IP 地址、VLAN 与子网规划", "关键设备与部署建议", "通信与运维接入方案"]),
+    ("通信关系与实施设计", ["实施步骤与迁移建议"]),
+    ("风险、假设与待确认项", ["风险、假设与待确认项"]),
+    ("结论与建议", ["结论与建议"]),
+]
+
+
+def _render_compact_formal(lines: list[str], plan: PlanBundle) -> None:
+    by_title = _chapter_map(plan.chapters)
+    for section_title, chapter_titles in COMPACT_SECTION_GROUPS:
+        matched = [by_title[title] for title in chapter_titles if title in by_title and title not in HIDE_FORMAL_TITLES]
+        if not matched:
+            continue
+        lines.append(f"## {section_title}")
+        lines.append("")
+        for chapter in matched:
+            display_title = FORMAL_TITLE_MAP.get(chapter.title, chapter.title)
+            lines.append(f"### {display_title}")
+            lines.append("")
+            if chapter.conclusion:
+                lines.append(f"【{display_title}】{_formalize_result_text(chapter.conclusion)}")
+                lines.append("")
+            if chapter.confirmed_facts:
+                raw_limit = 6 if chapter.title in {"业务分析与系统协同", "现状网络与调研结论", "现场环境与工程约束"} else 4
+                lines.append("**基础事实记录**")
+                lines.append("")
+                _append_evidence_list(lines, chapter.confirmed_facts, "当前未补充相关内容。", show_source=False, limit=raw_limit)
+            for table_title, headers, rows in _build_formal_tables(plan, chapter):
+                lines.append(f"**{table_title.replace('**', '')}**")
+                lines.append("")
+                _append_table(lines, headers, rows)
+            if chapter.confirmed_facts:
+                lines.append("**设计依据**")
+                lines.append("")
+                _append_evidence_list(lines, chapter.confirmed_facts, "当前未补充相关内容。", show_source=False, limit=4)
+            if chapter.recommendations and chapter.title not in {"结论与建议"}:
+                lines.append("**方案说明**")
+                lines.append("")
+                _append_evidence_list(lines, chapter.recommendations, "当前未补充相关内容。", show_source=False, limit=4)
+            if chapter.pending_items:
+                lines.append("**待确认项**")
+                lines.append("")
+                _append_evidence_list(lines, chapter.pending_items, "当前无新增待确认项。", show_source=False, limit=3)
 
 
 def _build_executive_summary(plan: PlanBundle) -> list[str]:
@@ -638,10 +765,7 @@ def render_markdown(plan: PlanBundle, assets: CoreAssets, style: str = "draft") 
 
     if style == "formal":
         lines.extend(_build_executive_summary(plan))
-        for chapter in _formal_ordered_chapters(plan.chapters):
-            if chapter.title in HIDE_FORMAL_TITLES:
-                continue
-            _render_formal_chapter(lines, plan, chapter)
+        _render_compact_formal(lines, plan)
     else:
         for chapter in plan.chapters:
             _render_draft_chapter(lines, chapter)

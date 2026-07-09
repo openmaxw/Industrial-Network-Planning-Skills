@@ -47,6 +47,9 @@ class Section:
     title: str
     number: str = ""
     summary: str = ""
+    raw_inputs: list[BulletBlock] = field(default_factory=list)
+    derived_constraints: list[BulletBlock] = field(default_factory=list)
+    design_responses: list[BulletBlock] = field(default_factory=list)
     paragraphs: list[ParagraphBlock] = field(default_factory=list)
     bullets: list[BulletBlock] = field(default_factory=list)
     diagrams: list[DiagramBlock] = field(default_factory=list)

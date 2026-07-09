@@ -27,6 +27,11 @@
 - `survey.observations`
 - `survey.findings`
 - `survey.concerns`
+- `survey.environment`
+- `survey.installation`
+- `survey.emc`
+- `survey.physicalDistances`
+- `survey.powerAndGrounding`
 
 ### 2.3 现状网络域
 
@@ -50,6 +55,8 @@
 - `communications.protocols`
 - `communications.accessPaths`
 - `communications.remoteMaintenance`
+- `communications.performance`
+- `communications.bandwidthDrivers`
 
 ### 2.6 地址规划域
 
@@ -77,6 +84,10 @@
 - `design.addressPlan`
 - `design.deployment`
 - `design.implementation`
+- `design.topologyRationale`
+- `design.redundancyPolicy`
+- `design.performancePlan`
+- `design.environmentAdaptation`
 
 ### 2.10 施工级定版域（可选）
 
@@ -88,6 +99,9 @@
 - `delivery.topologyLinks`
 - `delivery.topologyStructures`
 - `delivery.keyNetworkDevices`
+- `delivery.redundancyPlan`
+- `delivery.bandwidthPlan`
+- `delivery.environmentRequirements`
 
 ### 2.9 假设与待确认项域
 
@@ -112,4 +126,7 @@
 - 缺少事实时，允许生成“建议版方案”，但必须标记为建议或待确认
 - 缺少关键边界信息时，不得生成确定性的安全边界说明
 - 缺少地址基础时，不得生成精确的 IP 定稿，只能给规划原则或建议方案
+- 缺少环境、安装、供电、EMC 条件时，不得生成过度细化的设备等级、介质和安装定稿
+- 缺少可靠性目标、物理路径或停机容忍度时，不得把冗余结构写成确定性定版
+- 缺少流量、并发或关键业务性能约束时，不得给出过度确定的带宽定版值
 - 若提供施工级定版域，可优先输出精确定版表；若未提供，则维持区域级规划与待确认表达

@@ -52,7 +52,8 @@ def chapter_phrasing(chapter_title: str, recommendations: list[EvidenceItem], co
         for conflict in matched_conflicts:
             if _matches_conflict(text, conflict):
                 if conflict.downgrade_to == "pending":
-                    adjusted_pending.append(EvidenceItem(text=f"待确认：{text}", source=source, evidence_type="pending"))
+                    if conflict.domain in {"security-zones", "addressing-precision", "boundary-certainty", "remote-maintenance-boundary", "deployment-certainty", "availability-target-uncertain"}:
+                        adjusted_pending.append(EvidenceItem(text=f"待确认：{text}", source=source, evidence_type="pending"))
                     moved = True
                     break
                 if conflict.downgrade_to == "assumption":

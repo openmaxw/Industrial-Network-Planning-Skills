@@ -2,20 +2,20 @@ from planner_cli.models import EvidenceItem
 
 
 SECTION_SUMMARY_MAP = {
-    "项目概述与建设目标": "本章说明项目背景、建设目标、覆盖范围及主要实施约束。",
-    "现状网络与调研结论": "本章说明现状网络结构、调研结论与主要限制条件。",
-    "设计依据与方法说明": "本章说明方案形成依据与方法路径。",
-    "需求与约束分析": "本章说明业务连续性、安全、运维、扩展与施工方面的关键约束。",
-    "技术选择与方案比较": "本章说明主要技术路线、收敛逻辑与技术选择原因。",
-    "总体网络架构方案": "本章说明目标网络总体组织方式。",
-    "ISA95 层级建模与系统协同结构": "本章说明层级建模结果、对象归属及跨层协同关系。",
-    "IEC62443 分区分域与安全边界设计": "本章说明安全域划分、边界组织、受控通道及访问控制原则。",
-    "网络拓扑与通信路径说明": "本章说明主要连接结构、关键通信路径与跨域访问收敛方式。",
-    "IP 地址、VLAN 与子网规划": "本章说明地址规划、VLAN 组织方式及扩展预留。",
-    "关键设备与部署建议": "本章说明关键设备类别、部署位置与实施条件。",
-    "实施步骤与迁移建议": "本章说明实施前提、阶段划分及迁移风险控制重点。",
-    "风险、假设与待确认项": "本章集中说明风险项、假设项及待闭环事项。",
-    "结论与建议": "本章总结方案主结论，并明确下一步闭环事项。",
+    "项目概述与建设目标": "明确项目背景、建设目标、覆盖范围及主要实施约束。",
+    "现状网络与调研结论": "归纳现状网络结构、调研结果与主要限制条件。",
+    "设计依据与方法说明": "明确方案形成依据、设计边界与方法路径。",
+    "需求与约束分析": "归纳业务连续性、安全、运维、扩展与施工约束。",
+    "技术选择与方案比较": "明确主要技术路线及选择理由。",
+    "总体网络架构方案": "给出目标网络总体组织方式。",
+    "ISA95 层级建模与系统协同结构": "明确层级划分、对象归属及跨层协同关系。",
+    "IEC62443 分区分域与安全边界设计": "明确安全域划分、边界组织与访问控制原则。",
+    "网络拓扑与通信路径说明": "明确主要连接结构、关键通信路径与跨域访问组织方式。",
+    "IP 地址、VLAN 与子网规划": "明确地址规划、VLAN 组织方式及扩展预留。",
+    "关键设备与部署建议": "明确关键设备类别、部署位置与实施条件。",
+    "实施步骤与迁移建议": "明确实施前提、阶段划分与迁移控制重点。",
+    "风险、假设与待确认项": "归纳风险项、假设项及待闭环事项。",
+    "结论与建议": "汇总方案结论与下一步闭环事项。",
 }
 
 CHAPTER_RECOMMEND_KEYWORDS = {
@@ -266,7 +266,7 @@ def _default_narrative(title: str, confirmed_facts: list[EvidenceItem], recommen
         parts.append(f"后续工作按{topic}推进。")
     if pending:
         parts.append(f"其中，{pending[0]}需进一步确认。")
-    return "".join(parts) or SECTION_SUMMARY_MAP.get(title, "本章用于说明相关规划内容。")
+    return "".join(parts) or SECTION_SUMMARY_MAP.get(title, "归纳相关规划内容。")
 
 
 def _default_conclusion(title: str, confirmed_facts: list[EvidenceItem], recommendations: list[EvidenceItem], assumptions: list[EvidenceItem], pending_items: list[EvidenceItem]) -> str:
@@ -309,7 +309,7 @@ def _default_conclusion(title: str, confirmed_facts: list[EvidenceItem], recomme
         return "".join(parts)
 
     if title == "ISA95 层级建模与系统协同结构":
-        return f"系统职责分析结果表明，{_topic_phrase(title, recommendations) or '系统职责与协同界面'}需继续收敛。"
+        return f"系统职责划分、对象归属与协同界面按{_topic_phrase(title, recommendations) or '既定层级与协同边界'}组织。"
 
     if title == "网络拓扑与通信路径说明":
         parts = []
@@ -346,9 +346,9 @@ def _default_conclusion(title: str, confirmed_facts: list[EvidenceItem], recomme
     if title == "风险、假设与待确认项":
         parts = []
         if assumption:
-            parts.append(f"{assumption[0]}作为当前实施边界前提。")
+            parts.append(f"当前方案暂按{assumption[0]}组织实施边界。")
         if pending:
-            parts.append(f"优先完成{pending[0]}闭环确认。")
+            parts.append(f"{pending[0]}优先纳入实施前闭环事项。")
         return "".join(parts)
 
     if title == "结论与建议":

@@ -66,6 +66,14 @@ def _single(value: str, source: str, evidence_type: str) -> list[EvidenceItem]:
     return [EvidenceItem(text=value, source=source, evidence_type=evidence_type)] if value else []
 
 
+def _extract_keywords(values: list[str], keywords: list[str]) -> list[str]:
+    result: list[str] = []
+    for value in values:
+        if any(keyword in value for keyword in keywords):
+            result.append(value)
+    return result
+
+
 def _collect_audit(chapters: list[Chapter]) -> DocumentAudit:
     checks = [
         "每章均输出了本章目标与输入来源。",
@@ -116,6 +124,28 @@ def build_plan_bundle(payload: dict) -> PlanBundle:
     design = payload.get("design", {})
     open_items = payload.get("openItems", {})
     delivery = payload.get("delivery", {})
+
+    survey_constraints = _as_list(survey.get("concerns"))
+    project_constraints = _as_list(project.get("constraints"))
+    design_principles = _as_list(design.get("principles"))
+    topology_structures = delivery.get("topologyStructures") or []
+    topology_links = delivery.get("topologyLinks") or []
+    communications_flows = communications.get("flows") or []
+    communications_access_paths = _as_list(communications.get("accessPaths"))
+    communications_remote_maintenance = _as_list(communications.get("remoteMaintenance"))
+
+    environment_notes = _extract_keywords(
+        [*survey_constraints, *project_constraints, *design_principles, *communications_access_paths],
+        ["环境", "厂房", "车间", "层高", "高度", "温", "湿", "粉尘", "腐蚀", "振动", "冷热", "电磁", "EMC", "干扰", "机柜", "供电", "接地", "布线", "光纤"],
+    )
+    redundancy_notes = _extract_keywords(
+        [*survey_constraints, *project_constraints, *design_principles, *communications_remote_maintenance],
+        ["冗余", "双上联", "环", "星", "高可用", "可靠", "单点", "收敛", "容错"],
+    )
+    bandwidth_notes = _extract_keywords(
+        [*survey_constraints, *project_constraints, *design_principles, *communications_access_paths],
+        ["带宽", "吞吐", "时延", "实时", "视频", "采集", "流量", "上联", "千兆", "万兆", "广播"],
+    )
     inferred = infer_models(payload)
 
     assumptions = inferred.assumptions or _items(
@@ -248,12 +278,63 @@ def build_plan_bundle(payload: dict) -> PlanBundle:
             pending_items=_items(_as_list(open_items.get("customerConfirmation")), "openItems.customerConfirmation", "pending"),
         ),
         Chapter(
+            title="业务分析与系统协同",
+            objective="说明客户实际业务场景、业务对象、通信目的以及系统协同关系，这是后续网络设计的直接前提。",
+            input_sources=["communications", "assets", "currentNetwork", "survey"],
+            applicability=["当前章节用于先回答客户业务在谈什么、对象之间为什么通信、哪些业务必须连续可控。"],
+            closure_conditions=["闭环条件：业务场景、源目标对象、通信目的、优先级与关键接口边界完成确认后，后续网络设计才可定版。"],
+            rule_topics=rule_texts("场景规则", "分层规则", "通道规则"),
+            confirmed_facts=[
+                *_items([f"业务通信：{item}" for item in _as_list(communications.get("flows"))], "communications.flows", "fact"),
+                *_items([f"访问路径：{item}" for item in _as_list(communications.get("accessPaths"))], "communications.accessPaths", "fact"),
+                *_items([f"系统对象：{item}" for item in _as_list(assets.get("systems"))], "assets.systems", "fact"),
+                *_items([f"角色对象：{item}" for item in _as_list(assets.get("roles"))], "assets.roles", "fact"),
+                *_items([f"部署位置：{item}" for item in _as_list(assets.get("locations"))], "assets.locations", "fact"),
+            ],
+            recommendations=[
+                *_items([
+                    "网络设计应先基于业务场景、源目标对象、通信方式与业务目的确认必要通信，而不是先画拓扑后补业务解释。",
+                    "生产控制、接口服务、运维接入和管理交互应按业务职责分别建模，再映射为跨层协同和跨区通信需求。",
+                    "对业务连续性要求高、控制闭环敏感或关键接口链路不可中断的场景，应优先作为分层、边界、冗余和性能设计的约束输入。",
+                ], "business-derived", "recommendation"),
+                *_items([item.text for item in inferred.isa95.conclusions], "inference.isa95", "recommendation"),
+                *_items([f"跨层协同：{item.text}" for item in inferred.isa95.collaborations], "communications.flows", "recommendation"),
+            ],
+            pending_items=_items(_as_list(open_items.get("customerConfirmation")), "openItems.customerConfirmation", "pending"),
+        ),
+        Chapter(
+            title="现场环境与工程约束",
+            objective="说明厂房环境、空间安装、EMC 与供配电等现场条件如何约束网络设计。",
+            input_sources=["survey", "project", "design", "openItems"],
+            applicability=["当前章节用于把现场环境约束转写为设备、介质、布线和安装设计依据。"],
+            closure_conditions=["闭环条件：厂房尺寸、安装位置、供电接地和干扰源核实后，设备等级与安装方式方可定版。"],
+            rule_topics=rule_texts("技术选择规则", "部署规则", "实施规则"),
+            confirmed_facts=[
+                *_items([f"环境约束：{item}" for item in environment_notes], "survey+project+design", "fact"),
+                *_items([f"现场关注：{item}" for item in survey_constraints], "survey.concerns", "fact"),
+            ],
+            recommendations=[
+                *_items([
+                    "厂房尺寸、层高、机柜位置、供电与接地条件应转化为交换机安装方式、线缆路径和上联介质选择依据。",
+                    "高干扰、强电、变频器或大功率设备密集区域优先采用光纤上联、屏蔽布线和边界隔离组织方式。",
+                    "高温、高湿、粉尘、振动或腐蚀环境中的网络设备应按工业环境等级、EMC 能力和维护可达性选型。",
+                ], "environment-derived", "recommendation"),
+            ],
+            pending_items=_items(_as_list(open_items.get("siteVerification")), "openItems.siteVerification", "pending"),
+        ),
+        Chapter(
             title="总体网络架构方案",
             objective="说明目标网络总体结构、核心组织方式和边界思路。",
             input_sources=["design", "currentNetwork", "security"],
             rule_topics=rule_texts("场景规则", "分层规则", "区域规则", "地址规划规则", "冗余规则", "边界对象规则"),
             applicability=apply_phrasing("总体网络架构方案", rule_conclusions("场景规则", "分层规则", "区域规则", "地址规划规则"), pending_items).applicability,
             closure_conditions=apply_phrasing("总体网络架构方案", rule_conclusions("场景规则", "分层规则", "区域规则", "地址规划规则"), pending_items).closure_conditions,
+            confirmed_facts=[
+                *_single(f"目标架构：{design.get('targetArchitecture', '暂无目标架构描述。')}", "design.targetArchitecture", "fact"),
+                *_items([f"设计原则：{item}" for item in _as_list(design.get("principles"))], "design.principles", "fact"),
+                *_items([f"现网层级：{item}" for item in _as_list(current_network.get("layers"))], "currentNetwork.layers", "fact"),
+                *_items([f"边界要求：{item}" for item in _as_list(security.get("boundaryRequirements"))], "security.boundaryRequirements", "fact"),
+            ],
             recommendations=apply_phrasing("总体网络架构方案", [*rule_conclusions("场景规则", "分层规则", "区域规则", "地址规划规则", "冗余规则", "边界对象规则"), *_single(design.get("targetArchitecture", "暂无目标架构描述。"), "design.targetArchitecture", "recommendation"), *_items([f"设计原则：{item}" for item in _as_list(design.get("principles"))], "design.principles", "recommendation"), *_items([f"边界要求：{item}" for item in _as_list(security.get("boundaryRequirements"))], "security.boundaryRequirements", "recommendation"), *_items([item.text for item in inferred.boundary.conclusions], "inference.boundary", "recommendation")], pending_items).adjusted_recommendations,
             assumptions=assumptions + apply_phrasing("总体网络架构方案", [*rule_conclusions("场景规则", "分层规则", "区域规则", "地址规划规则", "冗余规则", "边界对象规则"), *_single(design.get("targetArchitecture", "暂无目标架构描述。"), "design.targetArchitecture", "recommendation")], pending_items).adjusted_assumptions,
             pending_items=pending_items + apply_phrasing("总体网络架构方案", [*rule_conclusions("场景规则", "分层规则", "区域规则", "地址规划规则", "冗余规则", "边界对象规则"), *_single(design.get("targetArchitecture", "暂无目标架构描述。"), "design.targetArchitecture", "recommendation")], pending_items).adjusted_pending,
@@ -276,6 +357,27 @@ def build_plan_bundle(payload: dict) -> PlanBundle:
                 *_items([item.text for item in inferred.isa95.conclusions], "inference.isa95", "recommendation"),
                 *_items([f"跨层协同：{item.text}" for item in inferred.isa95.collaborations], "communications.flows", "recommendation"),
             ],
+        ),
+        Chapter(
+            title="拓扑结构与冗余设计说明",
+            objective="说明星型、环型、双上联等结构的适用区域、规模边界及冗余原因。",
+            input_sources=["delivery", "communications", "design", "openItems"],
+            applicability=["当前章节用于解释为何采用对应拓扑结构，以及哪些区域只给原则性冗余建议。"],
+            closure_conditions=["闭环条件：可靠性目标、环网规模、物理路径与设备冗余范围确认后，拓扑结构方可冻结。"],
+            rule_topics=rule_texts("分层规则", "区域规则", "冗余规则", "部署规则"),
+            confirmed_facts=[
+                *_items([f"拓扑结构：{item}" for item in [str(item) for item in topology_structures]], "delivery.topologyStructures", "fact"),
+                *_items([f"冗余线索：{item}" for item in redundancy_notes], "survey+project+design", "fact"),
+            ],
+            recommendations=[
+                *_items([
+                    "中心核心区宜采用星型或双上联结构，便于集中纳管、边界收口和故障域控制。",
+                    "厂房汇聚区可按物理分布与连续性目标选择小规模环网或双上联接入，不宜在对象层无限制扩大环网规模。",
+                    "高关键控制区、停机敏感区和跨厂房关键链路应优先明确链路冗余、设备冗余和切换目标，而普通接入区可保留原则性冗余。",
+                ], "topology-derived", "recommendation"),
+                *_items([item.text for item in inferred.availability.recommendations], "inference.availability", "recommendation"),
+            ],
+            pending_items=_items(_as_list(open_items.get("customerConfirmation")), "openItems.customerConfirmation", "pending") + inferred.availability.pending_items,
         ),
         Chapter(
             title="IEC62443 分区分域与安全边界设计",
@@ -322,6 +424,28 @@ def build_plan_bundle(payload: dict) -> PlanBundle:
                 *rule_conclusions("通道规则"),
                 *_items([item.text for item in inferred.access_paths.conclusions], "inference.access_paths", "recommendation"),
             ], inferred.access_paths.pending_items).adjusted_pending,
+        ),
+        Chapter(
+            title="带宽与性能设计说明",
+            objective="说明主干、汇聚和接入的带宽组织依据，以及流量、时延和扩展预留的设计原因。",
+            input_sources=["communications", "delivery", "design", "openItems"],
+            applicability=["当前章节用于把业务流量、视频/采集/运维访问需求转写为带宽与分层承载建议。"],
+            closure_conditions=["闭环条件：关键业务流量、并发连接数、视频规模和上联链路能力核实后，带宽定版值方可冻结。"],
+            rule_topics=rule_texts("技术选择规则", "地址规划规则", "冗余规则"),
+            confirmed_facts=[
+                *_items([f"性能线索：{item}" for item in bandwidth_notes], "survey+project+design", "fact"),
+                *_items([f"访问路径：{item}" for item in communications_access_paths], "communications.accessPaths", "fact"),
+                *_items([f"通信流：{str(item)}" for item in communications_flows[:3]], "communications.flows", "fact"),
+                *_items([f"拓扑链路：{str(item)}" for item in topology_links[:3]], "delivery.topologyLinks", "fact"),
+            ],
+            recommendations=[
+                *_items([
+                    "核心与汇聚上联带宽应按控制流、监控流、视频流、历史数据和运维访问叠加后的峰值留有扩容余量。",
+                    "广播域规模、VLAN 划分和跨区访问收敛方式应共同控制广播噪声、故障域和时延波动。",
+                    "远距离或强干扰场景的主干链路宜优先采用光纤，并结合冗余目标确定单链、双上联或小环结构。",
+                ], "bandwidth-derived", "recommendation"),
+            ],
+            pending_items=_items(_as_list(open_items.get("siteVerification")), "openItems.siteVerification", "pending"),
         ),
         Chapter(
             title="IP 地址、VLAN 与子网规划",

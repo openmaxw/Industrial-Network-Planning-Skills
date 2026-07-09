@@ -74,6 +74,11 @@ input-package/
 - `observations`
 - `findings`
 - `concerns`
+- `environment`（温湿度、粉尘、腐蚀、振动、冷热冲击等环境条件）
+- `installation`（厂房尺寸、层高、桥架、机柜、安装位置等安装条件）
+- `emc`（电磁干扰源、强电邻近、隔离要求、屏蔽要求）
+- `physicalDistances`（跨车间、跨楼层、长距离链路区间）
+- `powerAndGrounding`（供电方式、UPS、接地、浪涌与保护条件）
 
 ### 4.3 `currentNetwork`
 
@@ -103,6 +108,8 @@ input-package/
 - `protocols`
 - `accessPaths`
 - `remoteMaintenance`
+- `performance`（实时性、时延、抖动、可用性等性能目标）
+- `bandwidthDrivers`（视频、历史库、采集、批量数据、远程维护等带宽驱动因素）
 
 ### 4.6 `addressing`
 
@@ -136,6 +143,10 @@ input-package/
 - `addressPlan`
 - `deployment`
 - `implementation`
+- `topologyRationale`（为何采用星型/环型/双上联/链型等）
+- `redundancyPolicy`（哪些区域需要链路/设备/电源冗余，哪些仅保留原则性建议）
+- `performancePlan`（主干、汇聚、接入带宽与性能组织原则）
+- `environmentAdaptation`（环境适配、EMC、介质和安装方式适配说明）
 
 ### 4.9 `openItems`
 
@@ -160,6 +171,9 @@ input-package/
 - `topologyLinks`（详细拓扑链路定义）
 - `topologyStructures`（星型、环型、双上联、堆叠等网络结构定义）
 - `keyNetworkDevices`（需重点突出的关键网络设备清单）
+- `redundancyPlan`（施工/审批冻结级冗余策略明细）
+- `bandwidthPlan`（施工/审批冻结级带宽与端口能力明细）
+- `environmentRequirements`（施工/审批冻结级环境与安装约束明细）
 
 ## 5. 必填与可缺失策略
 
@@ -182,6 +196,8 @@ input-package/
 - 精确 IP 清单
 - 设备品牌与型号
 - 详细冗余策略
+- 详细环境约束与 EMC 复核结果
+- 精确带宽计算值与性能验证值
 - 安全设备部署位置
 - 审计粒度与实施窗口
 
