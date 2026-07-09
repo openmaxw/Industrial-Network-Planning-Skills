@@ -484,11 +484,11 @@ def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, 
     if chapter.title == "结论与建议":
         return [(
             "**实施闭环表**",
-            ["编号", "闭环事项", "当前状态", "后续动作"],
+            ["编号", "事项", "状态", "后续动作"],
             [
-                ["CL-01", "总体架构与边界方案", "已明确", "按正式版输出进入深化设计。"],
-                ["CL-02", "地址、设备与访问细项", "待现场复核后锁定", pending[0] if pending else "完成复核后下发实施定稿。"],
-                ["CL-03", "实施组织与验收边界", "可启动", pending[1] if len(pending) > 1 else "按阶段实施并组织验收。"],
+                ["CL-01", "总体架构与边界方案", "已形成", "按正式版输出进入深化设计。"],
+                ["CL-02", "地址、设备与访问细项", "待确认", pending[0] if pending else "完成复核后下发实施定稿。"],
+                ["CL-03", "实施组织与验收边界", "具备实施条件", pending[1] if len(pending) > 1 else "按阶段实施并组织验收。"],
             ],
         )]
 
@@ -588,22 +588,12 @@ def _render_draft_chapter(lines: list[str], chapter: Chapter) -> None:
     for item in chapter.rule_topics:
         lines.append(f"- `{item}`")
     lines.append("")
-    lines.append("**适用前提**")
+    lines.append("**适用条件**")
     lines.append("")
     if chapter.applicability:
-        for item in chapter.applicability:
-            lines.append(f"- {item}")
-    else:
-        lines.append("- 本章未补充额外适用前提。")
-    lines.append("")
-    lines.append("**闭环条件**")
-    lines.append("")
+        pass
     if chapter.closure_conditions:
-        for item in chapter.closure_conditions:
-            lines.append(f"- {item}")
-    else:
-        lines.append("- 本章未补充额外闭环条件。")
-    lines.append("")
+        pass
     lines.append("**已确认事实**")
     lines.append("")
     _append_evidence_list(lines, chapter.confirmed_facts, "现阶段暂无进一步可确认事实。", limit=4)
