@@ -1,0 +1,603 @@
+{
+  "project": {
+    "name": "大亚湾一号核电机组 MES 工业网络规划项目",
+    "customer": "大亚湾核电基地",
+    "site": "大亚湾核电基地一号机组及相关生产支持区域",
+    "objective": "形成面向一号机组 MES 相关生产支撑系统的分区分层网络架构、边界控制、地址与 VLAN 规划及实施切换方案，满足生产业务连续性、关键系统隔离和运维可控接入要求。",
+    "scope": "覆盖一号机组 MES 服务器区、生产支撑系统接入区、接口服务边界、运维接入区、与办公网/管理网的受控交互边界，以及相关核心、汇聚、接入与边界设备部署。",
+    "constraints": [
+      "实施窗口需服从生产计划与检修安排",
+      "部分既有服务器、工作站和接口装置地址调整能力有限",
+      "关键区域设备部署、布线与切换需遵守现场管理要求"
+    ]
+  },
+  "survey": {
+    "participants": [
+      "业主信息化与生产支持团队",
+      "MES 运维与接口管理人员",
+      "区域弱电与网络实施人员"
+    ],
+    "timeline": [
+      "现状调研阶段",
+      "方案收敛阶段",
+      "实施准备阶段"
+    ],
+    "sources": [
+      "现网台账资料",
+      "接口清单与系统分布说明",
+      "现场条件访谈与历史改造信息"
+    ],
+    "observations": [
+      "现网可理解为生产支撑系统、专用工作站、接口服务器和中心业务平台分别建设，整体存在历史分散建设痕迹。",
+      "部分系统已具备独立控制网络或专用接入链路，但边界组织方式不统一。",
+      "既有地址体系、接口路径与运维方式存在历史差异。"
+    ],
+    "findings": [
+      "关键系统访问控制与运维审计边界需进一步收敛。",
+      "接口服务、核心业务与现场接入之间需建立清晰分区和受控路径。",
+      "现网改造需以平滑纳入和低扰动切换为前提。"
+    ],
+    "concerns": [
+      "关键接口链路在切换期间不可中断。",
+      "关键系统区不得暴露在非受控访问路径上。"
+    ]
+  },
+  "currentNetwork": {
+    "topology": "现网可理解为生产支撑系统、专用工作站、接口服务器和中心业务平台分别建设，部分系统具备独立控制网络或专用接入链路，整体存在历史分散建设痕迹。",
+    "layers": [
+      "MES核心服务区",
+      "生产支撑系统汇聚区",
+      "现场对象接入区"
+    ],
+    "boundaries": [
+      "办公/管理边界",
+      "MES接口服务边界",
+      "关键系统独立边界",
+      "运维接入边界"
+    ],
+    "links": [
+      "区域系统汇聚后上联 MES 核心区",
+      "办公/管理访问经接口服务边界收口",
+      "运维访问经统一入口接入"
+    ],
+    "resilience": [
+      "核心区与边界区需具备冗余条件",
+      "关键系统链路需结合现场条件确定冗余方式"
+    ]
+  },
+  "assets": {
+    "systems": [
+      "MES核心服务平台",
+      "接口服务系统",
+      "生产支撑系统",
+      "关键系统",
+      "运维审计系统"
+    ],
+    "devices": [
+      "核心交换机",
+      "汇聚交换机",
+      "边界防火墙",
+      "接口网关",
+      "堡垒机/审计设备",
+      "服务器与工作站"
+    ],
+    "locations": [
+      "中心机房",
+      "区域弱电间",
+      "关键系统收口点",
+      "运维接入区"
+    ],
+    "roles": [
+      "核心承载",
+      "区域汇聚",
+      "边界控制",
+      "接口转发",
+      "运维审计"
+    ],
+    "criticality": [
+      "关键系统区为高关键等级",
+      "MES核心服务区为重要业务承载区"
+    ]
+  },
+  "communications": {
+    "flows": [
+      "生产支撑系统数据经汇聚交换后上联 MES 核心服务区",
+      "接口服务器与上层管理/报表系统通过服务边界区受控交互",
+      "关键工作站和维护终端通过运维接入区访问授权目标"
+    ],
+    "accessPaths": [
+      "办公网或管理网不得直接访问现场对象或关键生产支撑系统",
+      "跨区访问统一经接口服务层、防火墙或受控边界网关转发"
+    ],
+    "protocols": [
+      "业务接口/API",
+      "数据库访问",
+      "授权运维协议",
+      "文件交换协议"
+    ],
+    "remoteMaintenance": [
+      "远程维护需经统一运维入口、双重审批与全程审计",
+      "关键系统不接受未经授权的直连远程访问"
+    ]
+  },
+  "addressing": {
+    "existingNetworks": [
+      "既有 MES 服务器区、接口设备与部分生产支撑系统地址需保留并平滑纳入规划",
+      "现网地址体系存在按历史子系统分别建设的差异"
+    ],
+    "reservedNetworks": [
+      "预留新增接口服务、运维接入和后续扩容地址空间",
+      "预留关键系统独立子网和边界设备地址空间"
+    ],
+    "vlans": [
+      "按 MES 核心服务区、接口服务边界区、生产支撑系统接入区、关键系统区和运维接入区划分 VLAN",
+      "按区域与用途结合划分子网并保留扩容余量"
+    ],
+    "naming": [
+      "按区域、系统属性和用途统一 VLAN 与子网命名",
+      "关键系统网络标识与普通支撑系统显著区分"
+    ],
+    "constraints": [
+      "既有主机与接口装置地址变更需纳入受控窗口",
+      "关键系统地址变更前需完成兼容性验证"
+    ]
+  },
+  "security": {
+    "objectives": [
+      "形成 MES 与办公网/管理网之间的清晰边界",
+      "实现关键系统与普通生产支撑系统分级隔离",
+      "收敛跨系统访问路径并落实最小权限控制",
+      "实现关键维护、接口交互与远程访问可审计"
+    ],
+    "zones": [
+      "办公/管理区",
+      "MES接口服务区",
+      "MES核心服务区",
+      "生产支撑系统接入区",
+      "关键系统区",
+      "运维接入区"
+    ],
+    "boundaryRequirements": [
+      "MES 与办公网/管理网之间通过受控服务边界交互",
+      "关键系统区采用独立边界控制与独立访问策略",
+      "运维访问不得绕过边界控制直接触达关键系统"
+    ],
+    "accessControl": [
+      "最小权限",
+      "白名单",
+      "账号隔离",
+      "双重审批",
+      "时间窗控制"
+    ],
+    "auditRequirements": [
+      "关键维护留痕",
+      "关键系统访问可审计",
+      "远程会话可审计"
+    ]
+  },
+  "design": {
+    "principles": [
+      "统一纳管与分级隔离并行",
+      "接口统一收口、访问统一控制",
+      "在业务连续前提下分阶段实施切换",
+      "兼顾既有系统平滑纳入与后续扩容"
+    ],
+    "targetArchitecture": "采用 MES 核心服务层、生产支撑系统汇聚层和现场对象接入层的分层结构；普通系统经本地汇聚后接入中心平台，关键系统独立接入受控边界。",
+    "segmentation": "划分 MES 核心服务区、接口服务边界区、生产支撑系统接入区、关键系统区与运维接入区，并通过防火墙、边界交换与服务层收敛跨域访问。",
+    "addressPlan": "按区域、系统属性、边界级别和用途组织地址空间，对关键系统区、服务边界区和运维区预留独立网段。",
+    "deployment": "MES 核心服务器、核心交换与边界设备部署于中心机房；汇聚设备部署于区域弱电间；关键系统边界设备部署于专用收口点。",
+    "implementation": "按现状核实与对象梳理、边界与地址定版、分阶段切换与验证三阶段实施。"
+  },
+  "openItems": {
+    "missingInformation": [
+      "部分既有接口装置协议与端口清单待补充",
+      "部分区域现网链路与地址台账待补充"
+    ],
+    "siteVerification": [
+      "关键系统边界设备部署位置待现场复核",
+      "各区域汇聚交换机与接口设备部署位置待现场复核",
+      "中心机房与区域弱电间之间主干链路条件待现场复核"
+    ],
+    "customerConfirmation": [
+      "关键系统隔离粒度与冗余范围待客户确认",
+      "MES 与上层管理系统接口范围及访问方向待客户确认",
+      "远程运维审批深度与第三方接入范围待客户确认"
+    ],
+    "designAssumptions": [
+      "默认各生产支撑系统具备本地控制能力后再纳入 MES",
+      "默认关键系统不与普通支撑系统共用访问边界",
+      "默认跨系统访问经服务边界层或受控网关收口"
+    ]
+  },
+  "delivery": {
+    "accessMatrix": [
+      {
+        "id": "AC-01",
+        "scenario": "生产数据采集",
+        "source": "生产支撑系统接入区",
+        "target": "MES核心服务区",
+        "service": "数据采集/状态上送",
+        "control": "仅允许业务所需方向与端口，按白名单放通"
+      },
+      {
+        "id": "AC-02",
+        "scenario": "业务接口交互",
+        "source": "办公/管理区",
+        "target": "MES接口服务区",
+        "service": "报表查询/API/文件交换",
+        "control": "经接口服务层转发，不允许直达核心服务或现场对象"
+      },
+      {
+        "id": "AC-03",
+        "scenario": "运维维护",
+        "source": "运维接入区",
+        "target": "关键系统区",
+        "service": "堡垒机会话/授权运维",
+        "control": "双重审批、全程审计、时间窗放行"
+      }
+    ],
+    "vlanPlan": [
+      {
+        "id": "IP-01",
+        "zone": "MES核心服务区",
+        "vlan": "VLAN 110",
+        "subnet": "10.110.0.0/24",
+        "naming": "MES-CORE-SRV",
+        "constraint": "核心服务地址统一管理，不与接入区混用"
+      },
+      {
+        "id": "IP-02",
+        "zone": "MES接口服务区",
+        "vlan": "VLAN 120",
+        "subnet": "10.120.0.0/24",
+        "naming": "MES-DMZ-IF",
+        "constraint": "仅承载接口与边界服务，不部署现场对象"
+      },
+      {
+        "id": "IP-03",
+        "zone": "生产支撑系统接入区",
+        "vlan": "VLAN 130-139",
+        "subnet": "10.130.0.0/22",
+        "naming": "MES-ACCESS-AREA",
+        "constraint": "按区域和系统属性细分，保留扩容余量"
+      },
+      {
+        "id": "IP-04",
+        "zone": "关键系统区",
+        "vlan": "VLAN 150",
+        "subnet": "10.150.0.0/24",
+        "naming": "MES-CRITICAL",
+        "constraint": "独立子网、独立策略、变更纳入受控窗口"
+      },
+      {
+        "id": "IP-05",
+        "zone": "运维接入区",
+        "vlan": "VLAN 160",
+        "subnet": "10.160.0.0/24",
+        "naming": "MES-OAM",
+        "constraint": "仅承载运维终端、堡垒机与审计设备"
+      }
+    ],
+    "devicePlan": [
+      {
+        "id": "EQ-01",
+        "location": "中心机房",
+        "device": "核心交换机/防火墙/MES服务器",
+        "role": "承载核心服务与统一边界控制",
+        "constraint": "需完成上架、电源、链路与冗余校核"
+      },
+      {
+        "id": "EQ-02",
+        "location": "区域弱电间",
+        "device": "汇聚交换机/接口网关",
+        "role": "承载区域接入汇聚与本地收口",
+        "constraint": "部署位置需与现有链路和机柜条件匹配"
+      },
+      {
+        "id": "EQ-03",
+        "location": "关键系统收口点",
+        "device": "边界交换/防火墙/审计接入设备",
+        "role": "承载关键系统独立边界控制与运维审计",
+        "constraint": "实施前锁定部署位置和接入关系"
+      }
+    ],
+    "topologyZones": [
+      {
+        "id": "ZONE-DMZ",
+        "title": "办公/管理与接口服务边界区"
+      },
+      {
+        "id": "ZONE-CORE",
+        "title": "MES核心服务区"
+      },
+      {
+        "id": "ZONE-FIELD",
+        "title": "生产支撑系统接入与汇聚区"
+      },
+      {
+        "id": "ZONE-CRITICAL",
+        "title": "关键系统独立边界区"
+      }
+    ],
+    "topologyNodes": [
+      {
+        "id": "FW-A",
+        "label": "边界防火墙 A",
+        "zone": "ZONE-DMZ",
+        "kind": "firewall"
+      },
+      {
+        "id": "FW-B",
+        "label": "边界防火墙 B",
+        "zone": "ZONE-DMZ",
+        "kind": "firewall"
+      },
+      {
+        "id": "IF-SRV",
+        "label": "接口服务服务器",
+        "zone": "ZONE-DMZ",
+        "kind": "server"
+      },
+      {
+        "id": "AUDIT",
+        "label": "堡垒机/审计服务器",
+        "zone": "ZONE-DMZ",
+        "kind": "server"
+      },
+      {
+        "id": "CORE-SW-A",
+        "label": "核心交换机 A",
+        "zone": "ZONE-CORE",
+        "kind": "switch"
+      },
+      {
+        "id": "CORE-SW-B",
+        "label": "核心交换机 B",
+        "zone": "ZONE-CORE",
+        "kind": "switch"
+      },
+      {
+        "id": "MES-APP",
+        "label": "MES 应用服务器",
+        "zone": "ZONE-CORE",
+        "kind": "server"
+      },
+      {
+        "id": "MES-DB",
+        "label": "MES 数据库服务器",
+        "zone": "ZONE-CORE",
+        "kind": "server"
+      },
+      {
+        "id": "MES-HIS",
+        "label": "MES 历史数据服务器",
+        "zone": "ZONE-CORE",
+        "kind": "server"
+      },
+      {
+        "id": "AGG-01",
+        "label": "区域汇聚交换机 01",
+        "zone": "ZONE-FIELD",
+        "kind": "switch"
+      },
+      {
+        "id": "AGG-02",
+        "label": "区域汇聚交换机 02",
+        "zone": "ZONE-FIELD",
+        "kind": "switch"
+      },
+      {
+        "id": "WS-OPS",
+        "label": "生产支撑工作站组",
+        "zone": "ZONE-FIELD",
+        "kind": "workstation"
+      },
+      {
+        "id": "GW-PLC",
+        "label": "接口网关/控制接入设备",
+        "zone": "ZONE-FIELD",
+        "kind": "gateway"
+      },
+      {
+        "id": "CRIT-FW",
+        "label": "关键系统边界防火墙",
+        "zone": "ZONE-CRITICAL",
+        "kind": "firewall"
+      },
+      {
+        "id": "CRIT-SW",
+        "label": "关键系统汇聚交换机",
+        "zone": "ZONE-CRITICAL",
+        "kind": "switch"
+      },
+      {
+        "id": "CRIT-WS",
+        "label": "关键系统工作站/专用终端",
+        "zone": "ZONE-CRITICAL",
+        "kind": "workstation"
+      }
+    ],
+    "topologyLinks": [
+      {
+        "source": "FW-A",
+        "target": "FW-B",
+        "label": "双机冗余",
+        "style": "solid"
+      },
+      {
+        "source": "FW-A",
+        "target": "IF-SRV",
+        "label": "接口服务接入",
+        "style": "solid"
+      },
+      {
+        "source": "FW-B",
+        "target": "AUDIT",
+        "label": "运维审计接入",
+        "style": "solid"
+      },
+      {
+        "source": "FW-A",
+        "target": "CORE-SW-A",
+        "label": "受控边界接入",
+        "style": "solid"
+      },
+      {
+        "source": "FW-B",
+        "target": "CORE-SW-B",
+        "label": "受控边界接入",
+        "style": "solid"
+      },
+      {
+        "source": "CORE-SW-A",
+        "target": "CORE-SW-B",
+        "label": "核心冗余互联",
+        "style": "solid"
+      },
+      {
+        "source": "MES-APP",
+        "target": "CORE-SW-A",
+        "label": "业务接入",
+        "style": "solid"
+      },
+      {
+        "source": "MES-DB",
+        "target": "CORE-SW-B",
+        "label": "数据库接入",
+        "style": "solid"
+      },
+      {
+        "source": "MES-HIS",
+        "target": "CORE-SW-A",
+        "label": "历史数据接入",
+        "style": "solid"
+      },
+      {
+        "source": "AGG-01",
+        "target": "CORE-SW-A",
+        "label": "主干上联 A",
+        "style": "solid"
+      },
+      {
+        "source": "AGG-02",
+        "target": "CORE-SW-B",
+        "label": "主干上联 B",
+        "style": "solid"
+      },
+      {
+        "source": "WS-OPS",
+        "target": "AGG-01",
+        "label": "区域业务接入",
+        "style": "solid"
+      },
+      {
+        "source": "GW-PLC",
+        "target": "AGG-02",
+        "label": "现场接口接入",
+        "style": "solid"
+      },
+      {
+        "source": "CRIT-FW",
+        "target": "CORE-SW-B",
+        "label": "关键系统受控边界",
+        "style": "solid"
+      },
+      {
+        "source": "CRIT-SW",
+        "target": "CRIT-FW",
+        "label": "边界内汇聚",
+        "style": "solid"
+      },
+      {
+        "source": "CRIT-WS",
+        "target": "CRIT-SW",
+        "label": "关键终端接入",
+        "style": "solid"
+      },
+      {
+        "source": "AUDIT",
+        "target": "CRIT-FW",
+        "label": "授权运维/审计",
+        "style": "dashed"
+      },
+      {
+        "source": "GW-PLC",
+        "target": "MES-APP",
+        "label": "状态采集/数据交互",
+        "style": "dashed"
+      }
+    ],
+    "topologyStructures": [
+      {
+        "id": "STRUCT-CORE",
+        "name": "核心双机冗余结构",
+        "type": "redundant-core",
+        "members": [
+          "CORE-SW-A",
+          "CORE-SW-B"
+        ],
+        "description": "核心交换机双机冗余互联，承载核心业务与主干收敛"
+      },
+      {
+        "id": "STRUCT-FIELD",
+        "name": "区域汇聚星型结构",
+        "type": "star",
+        "members": [
+          "CORE-SW-A",
+          "CORE-SW-B",
+          "AGG-01",
+          "AGG-02"
+        ],
+        "description": "各区域汇聚交换机以双上联方式接入核心，形成星型汇聚结构"
+      },
+      {
+        "id": "STRUCT-CRIT",
+        "name": "关键系统独立边界结构",
+        "type": "isolated-boundary",
+        "members": [
+          "CRIT-FW",
+          "CRIT-SW",
+          "CRIT-WS"
+        ],
+        "description": "关键系统通过独立边界防火墙和独立汇聚交换机接入，不与普通系统共边界"
+      }
+    ],
+    "keyNetworkDevices": [
+      {
+        "id": "CORE-SW-A",
+        "role": "核心交换机",
+        "importance": "高"
+      },
+      {
+        "id": "CORE-SW-B",
+        "role": "核心交换机",
+        "importance": "高"
+      },
+      {
+        "id": "FW-A",
+        "role": "边界防火墙",
+        "importance": "高"
+      },
+      {
+        "id": "FW-B",
+        "role": "边界防火墙",
+        "importance": "高"
+      },
+      {
+        "id": "CRIT-FW",
+        "role": "关键系统边界防火墙",
+        "importance": "高"
+      },
+      {
+        "id": "AGG-01",
+        "role": "区域汇聚交换机",
+        "importance": "中"
+      },
+      {
+        "id": "AGG-02",
+        "role": "区域汇聚交换机",
+        "importance": "中"
+      }
+    ]
+  }
+}

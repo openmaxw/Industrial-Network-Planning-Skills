@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "高冗余诉求场景项目",
+    "customer": "流程工业客户",
+    "site": "沿海生产基地",
+    "objective": "在高可用诉求下形成结构与实施建议",
+    "scope": "覆盖关键链路、关键设备、冗余建议与实施边界",
+    "constraints": ["停机容忍度低", "可靠性目标待进一步量化"]
+  },
+  "survey": {
+    "timeline": ["2026-02-14 调研"],
+    "participants": ["客户 IT", "生产负责人"],
+    "sources": ["访谈", "现网拓扑"],
+    "observations": ["关键业务连续性要求较高"],
+    "findings": ["关键链路当前冗余策略不统一"],
+    "concerns": ["可靠性目标尚未形成明确量化口径"]
+  },
+  "currentNetwork": {
+    "topology": "现网采用三级结构，关键链路具备部分冗余。",
+    "layers": ["核心层", "汇聚层", "接入层"],
+    "boundaries": ["关键边界控制路径需保证连续性"],
+    "links": ["核心到汇聚为关键链路", "汇聚到控制接入为关键链路"],
+    "resilience": "已有局部冗余，但缺少统一目标"
+  },
+  "assets": {
+    "systems": ["MES", "SCADA", "PLC 控制系统"],
+    "devices": ["核心交换机", "汇聚交换机", "工业防火墙"],
+    "roles": ["生产管理", "控制执行"],
+    "locations": ["机房", "弱电间", "控制柜"],
+    "criticality": ["核心链路为关键对象", "边界控制设备为关键对象"]
+  },
+  "communications": {
+    "flows": ["MES 与 SCADA 存在关键业务协同流"],
+    "protocols": ["工业以太网"],
+    "accessPaths": ["关键访问路径需保持高可用"],
+    "remoteMaintenance": []
+  },
+  "addressing": {
+    "existingNetworks": ["地址结构基本稳定"],
+    "reservedNetworks": ["预留未来冗余扩展地址空间"],
+    "vlans": ["按关键链路与边界组织 VLAN"],
+    "naming": ["按关键性命名"],
+    "constraints": []
+  },
+  "security": {
+    "objectives": ["保障关键访问路径连续性", "维持边界受控"],
+    "zones": ["核心区", "控制区"],
+    "boundaryRequirements": ["关键边界控制应稳定可靠"],
+    "accessControl": ["最小权限"],
+    "auditRequirements": ["关键访问留痕"]
+  },
+  "design": {
+    "principles": ["优先保障关键路径连续性"],
+    "targetArchitecture": "建议在关键链路和关键边界控制节点上优先考虑冗余设计。",
+    "segmentation": "建议维持核心区与控制区边界清晰。",
+    "addressPlan": "建议地址结构保持稳定并为扩展预留空间。",
+    "deployment": "建议关键边界控制与核心汇聚节点采用更高可靠性设计。",
+    "implementation": "建议在明确可靠性目标后分阶段实施冗余优化。"
+  },
+  "openItems": {
+    "missingInformation": ["可用性指标未量化"],
+    "siteVerification": ["关键链路物理路径待现场复核"],
+    "customerConfirmation": ["冗余目标等级待客户确认"],
+    "designAssumptions": ["默认优先保障关键业务链路"]
+  }
+}

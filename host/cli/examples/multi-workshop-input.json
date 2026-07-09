@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "多车间协同场景项目",
+    "customer": "离散制造客户",
+    "site": "华东综合工厂",
+    "objective": "支撑多车间、多业务协同下的结构优化与边界治理",
+    "scope": "覆盖厂级核心、多个车间汇聚、跨车间协同与统一边界控制",
+    "constraints": ["多车间协同关系复杂", "实施需分区域推进"]
+  },
+  "survey": {
+    "timeline": ["2026-06-01 调研", "2026-06-09 复核"],
+    "participants": ["客户 IT", "工艺负责人", "自动化负责人"],
+    "sources": ["拓扑图", "业务清单", "对象清单"],
+    "observations": ["多个车间之间存在业务协同与共享服务"],
+    "findings": ["跨车间访问路径较多，边界责任不清晰"],
+    "concerns": ["分阶段实施过程中需控制协同影响"]
+  },
+  "currentNetwork": {
+    "topology": "现网采用厂级核心与多个车间汇聚并行的结构。",
+    "layers": ["厂级核心层", "车间汇聚层", "产线接入层"],
+    "boundaries": ["跨车间访问边界不清晰"],
+    "links": ["车间 A 与车间 B 共享 MES 服务", "车间 C 需访问集中 SCADA"],
+    "resilience": "关键业务路径具备局部冗余"
+  },
+  "assets": {
+    "systems": ["MES", "SCADA", "PLC 控制系统", "质量系统"],
+    "devices": ["核心交换机", "汇聚交换机", "接入交换机", "服务器", "PLC"],
+    "roles": ["生产管理", "控制执行", "质量管理"],
+    "locations": ["厂级机房", "车间 A 弱电间", "车间 B 弱电间", "车间 C 弱电间"],
+    "criticality": ["跨车间协同链路为关键对象"]
+  },
+  "communications": {
+    "flows": ["MES 向多个车间提供生产管理服务", "质量系统与 SCADA 存在跨车间数据访问"],
+    "protocols": ["工业以太网", "应用层业务协议"],
+    "accessPaths": ["跨车间访问需通过受控路径统一组织"],
+    "remoteMaintenance": []
+  },
+  "addressing": {
+    "existingNetworks": ["各车间地址相对独立但命名不统一"],
+    "reservedNetworks": ["预留新增车间扩展地址空间"],
+    "vlans": ["按车间与业务边界组织 VLAN"],
+    "naming": ["统一按车间、系统、用途命名"],
+    "constraints": ["跨车间共享服务需保持连续性"]
+  },
+  "security": {
+    "objectives": ["明确跨车间边界", "控制共享服务访问路径"],
+    "zones": ["厂级服务区", "车间区", "控制区"],
+    "boundaryRequirements": ["跨车间访问通过统一边界控制"],
+    "accessControl": ["白名单", "最小权限"],
+    "auditRequirements": ["关键跨车间访问留痕"]
+  },
+  "design": {
+    "principles": ["先统一结构，再细化协同边界"],
+    "targetArchitecture": "建议保留厂级核心与车间汇聚结构，并统一组织跨车间访问边界。",
+    "segmentation": "建议按厂级服务区、车间区与控制区组织主要分区。",
+    "addressPlan": "建议以车间为主线组织地址，并为共享服务预留独立段。",
+    "deployment": "建议在厂级核心与共享服务边界部署统一控制节点。",
+    "implementation": "建议按车间分批推进，同时优先治理共享服务边界。"
+  },
+  "openItems": {
+    "missingInformation": ["部分跨车间访问流量细节未完全掌握"],
+    "siteVerification": ["共享服务边界设备位置待复核"],
+    "customerConfirmation": ["跨车间访问白名单粒度待确认"],
+    "designAssumptions": ["默认共享 MES 服务保持集中部署"]
+  }
+}

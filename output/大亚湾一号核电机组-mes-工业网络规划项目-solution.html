@@ -1,0 +1,993 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>大亚湾一号核电机组 MES 工业网络规划项目</title><style>
+:root{--bg:#f8fafc;--panel:#ffffff;--line:#e2e8f0;--text:#1e293b;--muted:#64748b;--blue:#2563eb;--blue2:#1d4ed8;}*{box-sizing:border-box;}html{scroll-behavior:smooth;}body{font-family:"Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);}.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;max-width:1540px;margin:0 auto;padding:20px;}.sidebar{position:sticky;top:16px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 8px 20px rgba(15,23,42,.05);max-height:calc(100vh - 32px);overflow:auto;}.brand{font-size:13px;color:var(--muted);margin-bottom:6px;}.project{font-size:22px;font-weight:700;color:#0f172a;line-height:1.4;margin-bottom:14px;}.meta{font-size:13px;line-height:1.75;color:var(--muted);margin-bottom:16px;}.nav-title{font-size:14px;font-weight:700;color:#0f172a;margin:12px 0 8px;}.nav{list-style:none;padding:0;margin:0;}.nav li{margin:5px 0;}.nav a{display:block;padding:7px 9px;border-radius:9px;color:var(--blue);text-decoration:none;font-size:13px;line-height:1.45;}.nav a:hover{background:#eff6ff;color:var(--blue2);}.main{min-width:0;}.cover,.chapter{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 28px;margin-bottom:20px;box-shadow:0 8px 22px rgba(15,23,42,.05);}.notice{border-left:4px solid #f59e0b;}.cover h1{margin:0 0 14px;font-size:34px;line-height:1.3;color:#0f172a;}.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;}.cover p{margin:0;line-height:1.75;font-size:14px;}h2{font-size:26px;margin:0 0 14px;color:#0f172a;padding-bottom:8px;border-bottom:1px solid var(--line);}h4{font-size:18px;margin:18px 0 10px;color:var(--blue2);}.para{line-height:1.85;margin:10px 0;font-size:14px;}.block{margin:14px 0 18px;}.diagram{overflow:auto;border:1px solid #cbd5e1;border-radius:12px;background:#fff;padding:8px;max-width:100%;}.diagram-hint{margin:0;padding:18px 14px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;}.diagram svg{display:block;width:100%;height:auto;max-height:640px;}.large-diagram svg{max-height:none;min-height:760px;}.table-wrap{overflow:auto;}table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;}th,td{border:1px solid #cbd5e1;padding:8px 10px;text-align:left;vertical-align:top;line-height:1.65;}th{background:#eff6ff;}ul{padding-left:20px;line-height:1.8;font-size:14px;}.appendix{border-style:dashed;}@media (max-width: 1200px){.layout{grid-template-columns:1fr;}.sidebar{position:relative;top:auto;max-height:none;}.cover-grid{grid-template-columns:1fr;}}</style></head><body><div class="layout"><aside class="sidebar"><div class="brand">正式交付件 / HTML 阅读版</div><div class="project">大亚湾一号核电机组 MES 工业网络规划项目</div><div class="meta"><div><strong>建设单位：</strong>大亚湾核电基地</div><div><strong>项目地点：</strong>大亚湾核电基地一号机组及相关生产支持区域</div><div><strong>版本：</strong>v1.0</div></div><div class="nav-title">章节导航</div><ul class="nav"><li><a href="#sec-1">项目概述</a></li><li><a href="#sec-2">现场调研与现状结论</a></li><li><a href="#sec-3">设计原则与技术路线</a></li><li><a href="#sec-4">需求与约束分析</a></li><li><a href="#sec-5">技术选择与方案比较</a></li><li><a href="#sec-6">总体网络架构方案</a></li><li><a href="#sec-7">网络分区与边界控制方案</a></li><li><a href="#sec-8">网络拓扑图</a></li><li><a href="#sec-9">地址、VLAN 与子网规划</a></li><li><a href="#sec-10">关键设备部署方案</a></li><li><a href="#sec-11">通信与运维接入方案</a></li><li><a href="#sec-12">实施方案与切换策略</a></li><li><a href="#sec-13">风险分析与待确认事项</a></li><li><a href="#sec-14">实施结论与定版条件</a></li></ul></aside><main class="main"><section class="cover"><h1>大亚湾一号核电机组 MES 工业网络规划项目</h1><div class="cover-grid"><p><strong>建设单位：</strong>大亚湾核电基地</p><p><strong>项目地点：</strong>大亚湾核电基地一号机组及相关生产支持区域</p><p><strong>项目目标：</strong>形成面向一号机组 MES 相关生产支撑系统的分区分层网络架构、边界控制、地址与 VLAN 规划及实施切换方案，满足生产业务连续性、关键系统隔离和运维可控接入要求。</p><p><strong>建设范围：</strong>覆盖一号机组 MES 服务器区、生产支撑系统接入区、接口服务边界、运维接入区、与办公网/管理网的受控交互边界，以及相关核心、汇聚、接入与边界设备部署。</p></div></section><div id="sec-1"><section class="chapter"><h2>项目概述</h2><p class="para">【本节结论】本项目建设以分层分区治理、边界收敛与地址规划协同推进为总体方向。</p><section class="block"><h4>项目目标与范围表</h4><div class="table-wrap"><table><thead><tr><th>项</th><th>定版内容</th><th>输出要求</th></tr></thead><tbody><tr><td>建设对象</td><td>大亚湾一号核电机组 MES 工业网络规划项目</td><td>作为本次网络方案正式交付对象。</td></tr><tr><td>建设范围</td><td>覆盖一号机组 MES 服务器区、生产支撑系统接入区、接口服务边界、运维接入区、与办公网/管理网的受控交互边界，以及相关核心、汇聚、接入与边界设备部署。</td><td>覆盖中央监控、厂房接入、边界与运维路径。</td></tr><tr><td>交付目标</td><td>形成面向一号机组 MES 相关生产支撑系统的分区分层网络架构、边界控制、地址与 VLAN 规划及实施切换方案，满足生产业务连续性、关键系统隔离和运维可控接入要求。</td><td>输出可评审、可实施、可移交的正式方案。</td></tr></tbody></table></div></section><section class="block"><h4>现状与已知条件</h4><ul><li>项目名称：大亚湾一号核电机组 MES 工业网络规划项目。</li><li>客户名称：大亚湾核电基地。</li><li>建设地点：大亚湾核电基地一号机组及相关生产支持区域。</li><li>建设目标：形成面向一号机组 MES 相关生产支撑系统的分区分层网络架构、边界控制、地址与 VLAN 规划及实施切换方案，满足生产业务连续性、关键系统隔离和运维可控接入要求。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>项目目标聚焦于分层分区优化、远程运维边界梳理与地址规划，适合采用结构治理与安全边界并行推进的总体策略。</li></ul></section></section></div><div id="sec-2"><section class="chapter"><h2>现场调研与现状结论</h2><p class="para">【调研结论摘要】关键系统边界设备部署位置待现场复核的复核结果将直接影响后续边界设计。</p><section class="block"><h4>现状调研摘要表</h4><div class="table-wrap"><table><thead><tr><th>项</th><th>现状结论</th><th>对设计的影响</th></tr></thead><tbody><tr><td>网络组织</td><td>现网可理解为生产支撑系统、专用工作站、接口服务器和中心业务平台分别建设，部分系统具备独立控制网络或专用接入链路，整体存在历史分散建设痕迹。</td><td>决定采用分厂房汇聚、中心统一收口架构。</td></tr><tr><td>现场部署</td><td>各区域汇聚交换机与接口设备部署位置待现场复核。</td><td>设备落位和主干路径需在实施前锁定。</td></tr><tr><td>主干条件</td><td>中心机房与区域弱电间之间主干链路条件待现场复核。</td><td>影响链路组织与冗余方式最终定版。</td></tr></tbody></table></div></section><section class="block"><h4>现状与已知条件</h4><ul><li>现网可理解为生产支撑系统、专用工作站、接口服务器和中心业务平台分别建设，部分系统具备独立控制网络或专用接入链路，整体存在历史分散建设痕迹。</li><li>MES核心服务区。</li><li>生产支撑系统汇聚区。</li><li>现场对象接入区。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-3"><section class="chapter"><h2>设计原则与技术路线</h2><p class="para">【设计说明】后续若输入条件发生变化，应同步修订相关章节结论，并重新核定网络边界、地址组织、设备部署及实施安排。</p><section class="block"><h4>设计依据</h4><ul><li>本方案基于项目输入资料、调研信息、现状网络信息与已知约束形成。</li><li>设计过程综合考虑网络分层承载、业务隔离、边界控制、运维可管可控及实施连续性要求。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>后续若补充现场核实信息，应据此更新边界、地址与实施细节。</li></ul></section></section></div><div id="sec-4"><section class="chapter"><h2>需求与约束分析</h2><p class="para">【需求与约束结论】在关键系统边界设备部署位置待现场复核完成确认前，相关章节按保守边界组织定版。</p><section class="block"><h4>需求与约束分析表</h4><div class="table-wrap"><table><thead><tr><th>类别</th><th>收敛结果</th><th>设计响应</th></tr></thead><tbody><tr><td>连续性</td><td>业务连续性要求：实施窗口需服从生产计划与检修安排。</td><td>采用分阶段接入与切换窗口控制。</td></tr><tr><td>隔离要求</td><td>业务连续性要求：部分既有服务器、工作站和接口装置地址调整能力有限。</td><td>高关键对象单独成区并配置独立边界控制。</td></tr><tr><td>存量兼容</td><td>调研约束：关键接口链路在切换期间不可中断。</td><td>对既有地址和接口采用平滑纳入方案。</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>业务连续性要求：实施窗口需服从生产计划与检修安排。</li><li>业务连续性要求：部分既有服务器、工作站和接口装置地址调整能力有限。</li><li>业务连续性要求：关键区域设备部署、布线与切换需遵守现场管理要求。</li><li>调研约束：关键接口链路在切换期间不可中断。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>项目目标聚焦于分层分区优化、远程运维边界梳理与地址规划，适合采用结构治理与安全边界并行推进的总体策略。</li><li>围绕办公访问、运维接入、受控交换与控制相关边界建立清晰区域框架。</li><li>办公到生产、运维到控制及第三方远程维护访问均应通过受控路径与边界控制点收敛。</li><li>跨域访问路径在完成必要性梳理后按对象、方向、协议和时间窗进行白名单化控制。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-5"><section class="chapter"><h2>技术选择与方案比较</h2><p class="para">【技术选择说明】当前技术路线已收敛到便于集中纳管、边界受控、分阶段实施和后续扩展的方案。在关键系统隔离粒度与冗余范围待客户确认完成确认前，最终技术细项继续保留定版弹性。</p><section class="block"><h4>技术路线比较表</h4><div class="table-wrap"><table><thead><tr><th>设计主题</th><th>定版选择</th><th>未采用方式</th></tr></thead><tbody><tr><td>总体架构</td><td>中央监控核心 + 厂房汇聚 + 对象接入三级结构</td><td>不采用全对象直连中心的扁平架构。</td></tr><tr><td>跨域交互</td><td>统一经服务边界/DMZ 收口</td><td>不采用 MES/办公网直接访问现场对象。</td></tr><tr><td>高关键对象</td><td>独立边界、独立策略、独立审计</td><td>不采用与普通公辅对象共享访问边界。</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>总体技术路线：采用 MES 核心服务层、生产支撑系统汇聚层和现场对象接入层的分层结构；普通系统经本地汇聚后接入中心平台，关键系统独立接入受控边界。</li><li>边界组织方式：划分 MES 核心服务区、接口服务边界区、生产支撑系统接入区、关键系统区与运维接入区，并通过防火墙、边界交换与服务层收敛跨域访问。</li><li>地址规划方式：按区域、系统属性、边界级别和用途组织地址空间，对关键系统区、服务边界区和运维区预留独立网段。</li><li>部署方式：MES 核心服务器、核心交换与边界设备部署于中心机房；汇聚设备部署于区域弱电间；关键系统边界设备部署于专用收口点。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>依据现有厂级核心、车间汇聚、产线接入结构及系统协同流，延续三级层级并强化层间职责划分。</li><li>围绕办公访问、运维接入、受控交换与控制相关边界建立清晰区域框架。</li><li>办公到生产、运维到控制及第三方远程维护访问均应通过受控路径与边界控制点收敛。</li><li>跨域访问路径在完成必要性梳理后按对象、方向、协议和时间窗进行白名单化控制。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统隔离粒度与冗余范围待客户确认。</li><li>MES 与上层管理系统接口范围及访问方向待客户确认。</li><li>远程运维审批深度与第三方接入范围待客户确认。</li></ul></section></section></div><div id="sec-6"><section class="chapter"><h2>总体网络架构方案</h2><p class="para">【架构说明】目标架构按分层承载、分区治理与受控边界收敛组织。默认各生产支撑系统具备本地控制能力后再纳入 MES作为后续详细设计基础。关键系统边界设备部署位置待现场复核完成后，边界设备、接口方式及部署细节同步细化。</p><section class="block"><h4>总体架构说明表</h4><div class="table-wrap"><table><thead><tr><th>设计项</th><th>定版结果</th><th>实施控制</th></tr></thead><tbody><tr><td>总体架构</td><td>采用核心层、汇聚层、接入层三级承载结构，中央统一监控、区域分散接入。</td><td>按各生产支撑系统具备本地控制能力后再纳入 MES。</td></tr><tr><td>分层组织</td><td>监控与服务集中部署，厂房侧对象先本地汇聚后接入中心平台，高关键对象独立边界接入。</td><td>关键系统边界设备部署位置待现场复核。</td></tr><tr><td>扩容控制</td><td>地址、边界与设备容量按后续新增对象预留扩容空间。</td><td>各区域汇聚交换机与接口设备部署位置待现场复核。</td></tr></tbody></table></div></section><section class="block"><h4>关键网络结构表</h4><div class="table-wrap"><table><thead><tr><th>结构名称</th><th>结构类型</th><th>结构说明</th></tr></thead><tbody><tr><td>核心双机冗余结构</td><td>redundant-core</td><td>核心交换机双机冗余互联，承载核心业务与主干收敛</td></tr><tr><td>区域汇聚星型结构</td><td>star</td><td>各区域汇聚交换机以双上联方式接入核心，形成星型汇聚结构</td></tr><tr><td>关键系统独立边界结构</td><td>isolated-boundary</td><td>关键系统通过独立边界防火墙和独立汇聚交换机接入，不与普通系统共边界</td></tr></tbody></table></div></section><section class="block"><h4>方案说明</h4><ul><li>项目目标聚焦于分层分区优化、远程运维边界梳理与地址规划，适合采用结构治理与安全边界并行推进的总体策略。</li><li>依据现有厂级核心、车间汇聚、产线接入结构及系统协同流，延续三级层级并强化层间职责划分。</li><li>围绕办公访问、运维接入、受控交换与控制相关边界建立清晰区域框架。</li><li>在现网存在地址复用的前提下，应优先保证边界清晰、VLAN 分段明确，并为新增产线预留地址空间。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-7"><section class="chapter"><h2>网络分区与边界控制方案</h2><p class="para">【边界控制说明】结合形成 MES 与办公网/管理网之间的清晰边界，安全边界设计按分区分域、统一边界控制、白名单放行和审计留痕组织定版。关键系统边界设备部署位置待现场复核的确认结果将决定受控通道与控制策略最终落地方式。</p><section class="block"><h4>边界控制表</h4><div class="table-wrap"><table><thead><tr><th>区域/边界</th><th>规划结果</th><th>控制要求</th></tr></thead><tbody><tr><td>监控核心区</td><td>承载 FMCS 中央监控平台、核心交换与集中管理服务。</td><td>跨区访问统一经边界控制点收口。</td></tr><tr><td>公辅控制区</td><td>普通公辅对象按厂房或对象类别组织接入，高关键对象独立成区。</td><td>对象间最小化互通，高关键对象不得与普通对象共边界。</td></tr><tr><td>运维/接口边界</td><td>MES、办公网、运维终端及第三方访问统一经受控边界接入。</td><td>白名单、账号与审计策略随实施定版。</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>形成 MES 与办公网/管理网之间的清晰边界。</li><li>实现关键系统与普通生产支撑系统分级隔离。</li><li>收敛跨系统访问路径并落实最小权限控制。</li><li>实现关键维护、接口交互与远程访问可审计。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>跨域访问路径在完成必要性梳理后按对象、方向、协议和时间窗进行白名单化控制。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-8"><section class="chapter"><h2>网络拓扑图</h2><p class="para">【通信路径说明】最终拓扑与通信路径按关键业务链路梳理与跨域访问统一收口执行。MES 与上层管理系统接口范围及访问方向待客户确认完成后，同步下发最终链路清单与访问白名单。</p><section class="block"><h4>访问控制矩阵摘要表</h4><div class="table-wrap"><table><thead><tr><th>编号</th><th>业务场景</th><th>源区</th><th>目标区</th><th>允许服务</th><th>控制要求</th></tr></thead><tbody><tr><td>AC-01</td><td>生产数据采集</td><td>生产支撑系统接入区</td><td>MES核心服务区</td><td>数据采集/状态上送</td><td>仅允许业务所需方向与端口，按白名单放通</td></tr><tr><td>AC-02</td><td>业务接口交互</td><td>办公/管理区</td><td>MES接口服务区</td><td>报表查询/API/文件交换</td><td>经接口服务层转发，不允许直达核心服务或现场对象</td></tr><tr><td>AC-03</td><td>运维维护</td><td>运维接入区</td><td>关键系统区</td><td>堡垒机会话/授权运维</td><td>双重审批、全程审计、时间窗放行</td></tr></tbody></table></div></section><section class="block"><h4>总体拓扑图</h4><div class="diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1912pt" height="1459pt"
+ viewBox="18.00 18.00 1894.20 1441.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 1401.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-1383.6 1836.6,-1383.6 1836.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="62.5" y="-1322.4" font-family="Arial" font-size="22.00" fill="#0f172a">总体拓扑图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_ZONE_DMZ</title>
+<path fill="#eef5ff" stroke="#6aa7ff" stroke-width="1.8" d="M20,-285C20,-285 820.5,-285 820.5,-285 826.5,-285 832.5,-291 832.5,-297 832.5,-297 832.5,-556 832.5,-556 832.5,-562 826.5,-568 820.5,-568 820.5,-568 20,-568 20,-568 14,-568 8,-562 8,-556 8,-556 8,-297 8,-297 8,-291 14,-285 20,-285"/>
+<text text-anchor="middle" x="150" y="-546.4" font-family="Arial" font-size="22.00" fill="#1d4ed8">办公/管理与接口服务边界区</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_n_ZONE_CORE</title>
+<path fill="#eef2ff" stroke="#8b9cf6" stroke-width="1.8" d="M643,-738C643,-738 1777,-738 1777,-738 1783,-738 1789,-744 1789,-750 1789,-750 1789,-1009 1789,-1009 1789,-1015 1783,-1021 1777,-1021 1777,-1021 643,-1021 643,-1021 637,-1021 631,-1015 631,-1009 631,-1009 631,-750 631,-750 631,-744 637,-738 643,-738"/>
+<text text-anchor="middle" x="717.5" y="-999.4" font-family="Arial" font-size="22.00" fill="#4338ca">MES核心服务区</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_n_ZONE_FIELD</title>
+<path fill="#ecfeff" stroke="#67d7ef" stroke-width="1.8" d="M303,-1021C303,-1021 1019,-1021 1019,-1021 1025,-1021 1031,-1027 1031,-1033 1031,-1033 1031,-1292 1031,-1292 1031,-1298 1025,-1304 1019,-1304 1019,-1304 303,-1304 303,-1304 297,-1304 291,-1298 291,-1292 291,-1292 291,-1033 291,-1033 291,-1027 297,-1021 303,-1021"/>
+<text text-anchor="middle" x="430" y="-1282.4" font-family="Arial" font-size="22.00" fill="#0f766e">生产支撑系统接入与汇聚区</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_n_ZONE_CRITICAL</title>
+<path fill="#eef5ff" stroke="#6aa7ff" stroke-width="1.8" d="M303,-103C303,-103 1219,-103 1219,-103 1225,-103 1231,-109 1231,-115 1231,-115 1231,-273 1231,-273 1231,-279 1225,-285 1219,-285 1219,-285 303,-285 303,-285 297,-285 291,-279 291,-273 291,-273 291,-115 291,-115 291,-109 297,-103 303,-103"/>
+<text text-anchor="middle" x="397" y="-263.4" font-family="Arial" font-size="22.00" fill="#1d4ed8">关键系统独立边界区</text>
+</g>
+<!-- n_FW_A -->
+<g id="node1" class="node">
+<title>n_FW_A</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M148,-506C148,-506 50,-506 50,-506 44,-506 38,-500 38,-494 38,-494 38,-462 38,-462 38,-456 44,-450 50,-450 50,-450 148,-450 148,-450 154,-450 160,-456 160,-462 160,-462 160,-494 160,-494 160,-500 154,-506 148,-506"/>
+<text text-anchor="middle" x="99" y="-474.6" font-family="Arial" font-size="13.00" fill="#9f1239">边界防火墙 A</text>
+</g>
+<!-- n_FW_B -->
+<g id="node2" class="node">
+<title>n_FW_B</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M446.5,-371C446.5,-371 348.5,-371 348.5,-371 342.5,-371 336.5,-365 336.5,-359 336.5,-359 336.5,-327 336.5,-327 336.5,-321 342.5,-315 348.5,-315 348.5,-315 446.5,-315 446.5,-315 452.5,-315 458.5,-321 458.5,-327 458.5,-327 458.5,-359 458.5,-359 458.5,-365 452.5,-371 446.5,-371"/>
+<text text-anchor="middle" x="397.5" y="-339.6" font-family="Arial" font-size="13.00" fill="#9f1239">边界防火墙 B</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_FW_B -->
+<g id="edge1" class="edge">
+<title>n_FW_A&#45;&gt;n_FW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M99,-449.7C99,-410.11 99,-343 99,-343 99,-343 327.87,-343 327.87,-343"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="327.87,-345.98 336.37,-343 327.87,-340.03 327.87,-345.98"/>
+<text text-anchor="middle" x="240.5" y="-397" font-family="Arial" font-size="10.00" fill="#475569">双机冗余</text>
+</g>
+<!-- n_IF_SRV -->
+<g id="node3" class="node">
+<title>n_IF_SRV</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M447.5,-506C447.5,-506 347.5,-506 347.5,-506 341.5,-506 335.5,-500 335.5,-494 335.5,-494 335.5,-462 335.5,-462 335.5,-456 341.5,-450 347.5,-450 347.5,-450 447.5,-450 447.5,-450 453.5,-450 459.5,-456 459.5,-462 459.5,-462 459.5,-494 459.5,-494 459.5,-500 453.5,-506 447.5,-506"/>
+<text text-anchor="middle" x="397.5" y="-474.6" font-family="Arial" font-size="13.00" fill="#6d28d9">接口服务服务器</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_IF_SRV -->
+<g id="edge2" class="edge">
+<title>n_FW_A&#45;&gt;n_IF_SRV</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M160.13,-478C160.13,-478 326.93,-478 326.93,-478"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="326.93,-480.98 335.43,-478 326.93,-475.03 326.93,-480.98"/>
+<text text-anchor="middle" x="240.5" y="-492" font-family="Arial" font-size="10.00" fill="#475569">接口服务接入</text>
+</g>
+<!-- n_CORE_SW_A -->
+<g id="node5" class="node">
+<title>n_CORE_SW_A</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M1175.5,-824C1175.5,-824 1077.5,-824 1077.5,-824 1071.5,-824 1065.5,-818 1065.5,-812 1065.5,-812 1065.5,-780 1065.5,-780 1065.5,-774 1071.5,-768 1077.5,-768 1077.5,-768 1175.5,-768 1175.5,-768 1181.5,-768 1187.5,-774 1187.5,-780 1187.5,-780 1187.5,-812 1187.5,-812 1187.5,-818 1181.5,-824 1175.5,-824"/>
+<text text-anchor="middle" x="1126.5" y="-792.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 A</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_CORE_SW_A -->
+<g id="edge4" class="edge">
+<title>n_FW_A&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M99,-506.06C99,-551.71 99,-637 99,-637 99,-637 1127,-637 1127,-637 1127,-637 1127,-759.44 1127,-759.44"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1124.03,-759.44 1127,-767.94 1129.98,-759.44 1124.03,-759.44"/>
+<text text-anchor="middle" x="566" y="-652" font-family="Arial" font-size="10.00" fill="#475569">受控边界接入</text>
+</g>
+<!-- n_AUDIT -->
+<g id="node4" class="node">
+<title>n_AUDIT</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M790.5,-371C790.5,-371 674.5,-371 674.5,-371 668.5,-371 662.5,-365 662.5,-359 662.5,-359 662.5,-327 662.5,-327 662.5,-321 668.5,-315 674.5,-315 674.5,-315 790.5,-315 790.5,-315 796.5,-315 802.5,-321 802.5,-327 802.5,-327 802.5,-359 802.5,-359 802.5,-365 796.5,-371 790.5,-371"/>
+<text text-anchor="middle" x="732.5" y="-339.6" font-family="Arial" font-size="13.00" fill="#6d28d9">堡垒机/审计服务器</text>
+</g>
+<!-- n_FW_B&#45;&gt;n_AUDIT -->
+<g id="edge3" class="edge">
+<title>n_FW_B&#45;&gt;n_AUDIT</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M458.55,-333.67C458.55,-333.67 653.8,-333.67 653.8,-333.67"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="653.8,-336.64 662.3,-333.67 653.8,-330.69 653.8,-336.64"/>
+<text text-anchor="middle" x="566" y="-397" font-family="Arial" font-size="10.00" fill="#475569">运维审计接入</text>
+</g>
+<!-- n_CORE_SW_B -->
+<g id="node6" class="node">
+<title>n_CORE_SW_B</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M1747,-875C1747,-875 1649,-875 1649,-875 1643,-875 1637,-869 1637,-863 1637,-863 1637,-831 1637,-831 1637,-825 1643,-819 1649,-819 1649,-819 1747,-819 1747,-819 1753,-819 1759,-825 1759,-831 1759,-831 1759,-863 1759,-863 1759,-869 1753,-875 1747,-875"/>
+<text text-anchor="middle" x="1698" y="-843.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 B</text>
+</g>
+<!-- n_FW_B&#45;&gt;n_CORE_SW_B -->
+<g id="edge5" class="edge">
+<title>n_FW_B&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M458.76,-352.33C464.94,-352.33 469,-352.33 469,-352.33 469,-352.33 469,-854.6 469,-854.6 469,-854.6 1628.13,-854.6 1628.13,-854.6"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1628.13,-857.58 1636.63,-854.6 1628.13,-851.63 1628.13,-857.58"/>
+<text text-anchor="middle" x="929.5" y="-493" font-family="Arial" font-size="10.00" fill="#475569">受控边界接入</text>
+</g>
+<!-- n_CRIT_FW -->
+<g id="node14" class="node">
+<title>n_CRIT_FW</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M1189,-223C1189,-223 1064,-223 1064,-223 1058,-223 1052,-217 1052,-211 1052,-211 1052,-179 1052,-179 1052,-173 1058,-167 1064,-167 1064,-167 1189,-167 1189,-167 1195,-167 1201,-173 1201,-179 1201,-179 1201,-211 1201,-211 1201,-217 1195,-223 1189,-223"/>
+<text text-anchor="middle" x="1126.5" y="-191.6" font-family="Arial" font-size="13.00" fill="#9f1239">关键系统边界防火墙</text>
+</g>
+<!-- n_AUDIT&#45;&gt;n_CRIT_FW -->
+<g id="edge17" class="edge">
+<title>n_AUDIT&#45;&gt;n_CRIT_FW</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M802.57,-343C899.05,-343 1061,-343 1061,-343 1061,-343 1061,-231.69 1061,-231.69"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="1063.98,-231.69 1061,-223.19 1058.03,-231.69 1063.98,-231.69"/>
+<text text-anchor="middle" x="929.5" y="-328" font-family="Arial" font-size="10.00" fill="#b45309">授权运维/审计</text>
+</g>
+<!-- n_CORE_SW_A&#45;&gt;n_CORE_SW_B -->
+<g id="edge6" class="edge">
+<title>n_CORE_SW_A&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M1127,-824.15C1127,-834.8 1127,-844.4 1127,-844.4 1127,-844.4 1628.39,-844.4 1628.39,-844.4"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1628.39,-847.38 1636.89,-844.4 1628.39,-841.43 1628.39,-847.38"/>
+<text text-anchor="middle" x="1419" y="-850" font-family="Arial" font-size="10.00" fill="#475569">核心冗余互联</text>
+</g>
+<!-- n_MES_APP -->
+<g id="node7" class="node">
+<title>n_MES_APP</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M786,-959C786,-959 679,-959 679,-959 673,-959 667,-953 667,-947 667,-947 667,-915 667,-915 667,-909 673,-903 679,-903 679,-903 786,-903 786,-903 792,-903 798,-909 798,-915 798,-915 798,-947 798,-947 798,-953 792,-959 786,-959"/>
+<text text-anchor="middle" x="732.5" y="-927.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 应用服务器</text>
+</g>
+<!-- n_MES_APP&#45;&gt;n_CORE_SW_A -->
+<g id="edge7" class="edge">
+<title>n_MES_APP&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M798.02,-931C812.69,-931 824,-931 824,-931 824,-931 824,-796 824,-796 824,-796 1056.78,-796 1056.78,-796"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1056.78,-798.98 1065.28,-796 1056.78,-793.03 1056.78,-798.98"/>
+<text text-anchor="middle" x="929.5" y="-945" font-family="Arial" font-size="10.00" fill="#475569">业务接入</text>
+</g>
+<!-- n_MES_DB -->
+<g id="node8" class="node">
+<title>n_MES_DB</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M1186,-959C1186,-959 1067,-959 1067,-959 1061,-959 1055,-953 1055,-947 1055,-947 1055,-915 1055,-915 1055,-909 1061,-903 1067,-903 1067,-903 1186,-903 1186,-903 1192,-903 1198,-909 1198,-915 1198,-915 1198,-947 1198,-947 1198,-953 1192,-959 1186,-959"/>
+<text text-anchor="middle" x="1126.5" y="-927.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 数据库服务器</text>
+</g>
+<!-- n_MES_DB&#45;&gt;n_CORE_SW_B -->
+<g id="edge8" class="edge">
+<title>n_MES_DB&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M1195,-902.93C1195,-884.88 1195,-864.8 1195,-864.8 1195,-864.8 1628.33,-864.8 1628.33,-864.8"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1628.33,-867.78 1636.83,-864.8 1628.33,-861.83 1628.33,-867.78"/>
+<text text-anchor="middle" x="1419" y="-945" font-family="Arial" font-size="10.00" fill="#475569">数据库接入</text>
+</g>
+<!-- n_MES_HIS -->
+<g id="node9" class="node">
+<title>n_MES_HIS</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M792,-824C792,-824 673,-824 673,-824 667,-824 661,-818 661,-812 661,-812 661,-780 661,-780 661,-774 667,-768 673,-768 673,-768 792,-768 792,-768 798,-768 804,-774 804,-780 804,-780 804,-812 804,-812 804,-818 798,-824 792,-824"/>
+<text text-anchor="middle" x="732.5" y="-799.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 历史数据服务</text>
+<text text-anchor="middle" x="732.5" y="-785.6" font-family="Arial" font-size="13.00" fill="#6d28d9">器</text>
+</g>
+<!-- n_MES_HIS&#45;&gt;n_CORE_SW_A -->
+<g id="edge9" class="edge">
+<title>n_MES_HIS&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M804.31,-782C804.31,-782 1056.71,-782 1056.71,-782"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1056.71,-784.98 1065.21,-782 1056.71,-779.03 1056.71,-784.98"/>
+<text text-anchor="middle" x="929.5" y="-850" font-family="Arial" font-size="10.00" fill="#475569">历史数据接入</text>
+</g>
+<!-- n_AGG_01 -->
+<g id="node10" class="node">
+<title>n_AGG_01</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M792,-1126C792,-1126 673,-1126 673,-1126 667,-1126 661,-1120 661,-1114 661,-1114 661,-1082 661,-1082 661,-1076 667,-1070 673,-1070 673,-1070 792,-1070 792,-1070 798,-1070 804,-1076 804,-1082 804,-1082 804,-1114 804,-1114 804,-1120 798,-1126 792,-1126"/>
+<text text-anchor="middle" x="732.5" y="-1094.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">区域汇聚交换机 01</text>
+</g>
+<!-- n_AGG_01&#45;&gt;n_CORE_SW_A -->
+<g id="edge10" class="edge">
+<title>n_AGG_01&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M804.27,-1098C824.44,-1098 841,-1098 841,-1098 841,-1098 841,-810 841,-810 841,-810 1056.75,-810 1056.75,-810"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1056.75,-812.98 1065.25,-810 1056.75,-807.03 1056.75,-812.98"/>
+<text text-anchor="middle" x="929.5" y="-1058" font-family="Arial" font-size="10.00" fill="#475569">主干上联 A</text>
+</g>
+<!-- n_AGG_02 -->
+<g id="node11" class="node">
+<title>n_AGG_02</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M989,-1217C989,-1217 870,-1217 870,-1217 864,-1217 858,-1211 858,-1205 858,-1205 858,-1173 858,-1173 858,-1167 864,-1161 870,-1161 870,-1161 989,-1161 989,-1161 995,-1161 1001,-1167 1001,-1173 1001,-1173 1001,-1205 1001,-1205 1001,-1211 995,-1217 989,-1217"/>
+<text text-anchor="middle" x="929.5" y="-1185.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">区域汇聚交换机 02</text>
+</g>
+<!-- n_AGG_02&#45;&gt;n_CORE_SW_B -->
+<g id="edge11" class="edge">
+<title>n_AGG_02&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M1001.11,-1189C1191.89,-1189 1698,-1189 1698,-1189 1698,-1189 1698,-883.78 1698,-883.78"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1700.98,-883.78 1698,-875.28 1695.03,-883.78 1700.98,-883.78"/>
+<text text-anchor="middle" x="1126.5" y="-1168" font-family="Arial" font-size="10.00" fill="#475569">主干上联 B</text>
+</g>
+<!-- n_WS_OPS -->
+<g id="node12" class="node">
+<title>n_WS_OPS</title>
+<path fill="#f8fafc" stroke="#94a3b8" stroke-width="1.7" d="M454,-1107C454,-1107 341,-1107 341,-1107 335,-1107 329,-1101 329,-1095 329,-1095 329,-1063 329,-1063 329,-1057 335,-1051 341,-1051 341,-1051 454,-1051 454,-1051 460,-1051 466,-1057 466,-1063 466,-1063 466,-1095 466,-1095 466,-1101 460,-1107 454,-1107"/>
+<text text-anchor="middle" x="397.5" y="-1075.6" font-family="Arial" font-size="13.00" fill="#334155">生产支撑工作站组</text>
+</g>
+<!-- n_WS_OPS&#45;&gt;n_AGG_01 -->
+<g id="edge12" class="edge">
+<title>n_WS_OPS&#45;&gt;n_AGG_01</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M466.1,-1088.5C466.1,-1088.5 652.31,-1088.5 652.31,-1088.5"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="652.31,-1091.48 660.81,-1088.5 652.31,-1085.53 652.31,-1091.48"/>
+<text text-anchor="middle" x="566" y="-1133" font-family="Arial" font-size="10.00" fill="#475569">区域业务接入</text>
+</g>
+<!-- n_GW_PLC -->
+<g id="node13" class="node">
+<title>n_GW_PLC</title>
+<path fill="#fff7ed" stroke="#fdba74" stroke-width="1.7" d="M462,-1242C462,-1242 333,-1242 333,-1242 327,-1242 321,-1236 321,-1230 321,-1230 321,-1198 321,-1198 321,-1192 327,-1186 333,-1186 333,-1186 462,-1186 462,-1186 468,-1186 474,-1192 474,-1198 474,-1198 474,-1230 474,-1230 474,-1236 468,-1242 462,-1242"/>
+<text text-anchor="middle" x="397.5" y="-1217.6" font-family="Arial" font-size="13.00" fill="#c2410c">接口网关/控制接入设</text>
+<text text-anchor="middle" x="397.5" y="-1203.6" font-family="Arial" font-size="13.00" fill="#c2410c">备</text>
+</g>
+<!-- n_GW_PLC&#45;&gt;n_MES_APP -->
+<g id="edge18" class="edge">
+<title>n_GW_PLC&#45;&gt;n_MES_APP</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M472,-1185.83C472,-1114.25 472,-931 472,-931 472,-931 658.26,-931 658.26,-931"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="658.26,-933.98 666.76,-931 658.26,-928.03 658.26,-933.98"/>
+<text text-anchor="middle" x="566" y="-986" font-family="Arial" font-size="10.00" fill="#b45309">状态采集/数据交互</text>
+</g>
+<!-- n_GW_PLC&#45;&gt;n_AGG_02 -->
+<g id="edge13" class="edge">
+<title>n_GW_PLC&#45;&gt;n_AGG_02</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M474.01,-1201.5C474.01,-1201.5 849.26,-1201.5 849.26,-1201.5"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="849.26,-1204.48 857.76,-1201.5 849.26,-1198.53 849.26,-1204.48"/>
+<text text-anchor="middle" x="566" y="-1228" font-family="Arial" font-size="10.00" fill="#475569">现场接口接入</text>
+</g>
+<!-- n_CRIT_FW&#45;&gt;n_CORE_SW_B -->
+<g id="edge14" class="edge">
+<title>n_CRIT_FW&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M1191,-223.29C1191,-346.99 1191,-834.2 1191,-834.2 1191,-834.2 1628.34,-834.2 1628.34,-834.2"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1628.34,-837.18 1636.84,-834.2 1628.34,-831.23 1628.34,-837.18"/>
+<text text-anchor="middle" x="1419" y="-386" font-family="Arial" font-size="10.00" fill="#475569">关键系统受控边界</text>
+</g>
+<!-- n_CRIT_SW -->
+<g id="node15" class="node">
+<title>n_CRIT_SW</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M795,-223C795,-223 670,-223 670,-223 664,-223 658,-217 658,-211 658,-211 658,-179 658,-179 658,-173 664,-167 670,-167 670,-167 795,-167 795,-167 801,-167 807,-173 807,-179 807,-179 807,-211 807,-211 807,-217 801,-223 795,-223"/>
+<text text-anchor="middle" x="732.5" y="-191.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">关键系统汇聚交换机</text>
+</g>
+<!-- n_CRIT_SW&#45;&gt;n_CRIT_FW -->
+<g id="edge15" class="edge">
+<title>n_CRIT_SW&#45;&gt;n_CRIT_FW</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M807.07,-195C807.07,-195 1043.4,-195 1043.4,-195"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1043.4,-197.98 1051.9,-195 1043.4,-192.03 1043.4,-197.98"/>
+<text text-anchor="middle" x="929.5" y="-215" font-family="Arial" font-size="10.00" fill="#475569">边界内汇聚</text>
+</g>
+<!-- n_CRIT_WS -->
+<g id="node16" class="node">
+<title>n_CRIT_WS</title>
+<path fill="#f8fafc" stroke="#94a3b8" stroke-width="1.7" d="M462,-223C462,-223 333,-223 333,-223 327,-223 321,-217 321,-211 321,-211 321,-179 321,-179 321,-173 327,-167 333,-167 333,-167 462,-167 462,-167 468,-167 474,-173 474,-179 474,-179 474,-211 474,-211 474,-217 468,-223 462,-223"/>
+<text text-anchor="middle" x="397.5" y="-198.6" font-family="Arial" font-size="13.00" fill="#334155">关键系统工作站/专用</text>
+<text text-anchor="middle" x="397.5" y="-184.6" font-family="Arial" font-size="13.00" fill="#334155">终端</text>
+</g>
+<!-- n_CRIT_WS&#45;&gt;n_CRIT_SW -->
+<g id="edge16" class="edge">
+<title>n_CRIT_WS&#45;&gt;n_CRIT_SW</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M474.36,-195C474.36,-195 649.23,-195 649.23,-195"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="649.23,-197.98 657.73,-195 649.23,-192.03 649.23,-197.98"/>
+<text text-anchor="middle" x="566" y="-215" font-family="Arial" font-size="10.00" fill="#475569">关键终端接入</text>
+</g>
+<!-- legend -->
+<g id="node17" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M1574,-198C1574,-198 1264,-198 1264,-198 1258,-198 1252,-192 1252,-186 1252,-186 1252,-12 1252,-12 1252,-6 1258,0 1264,0 1264,0 1574,0 1574,0 1580,0 1586,-6 1586,-12 1586,-12 1586,-186 1586,-186 1586,-192 1580,-198 1574,-198"/>
+<polygon fill="#f8fafc" stroke="transparent" points="1253,-169 1253,-197 1585,-197 1585,-169 1253,-169"/>
+<text text-anchor="start" x="1406" y="-180.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="1253,-141 1253,-169 1376,-169 1376,-141 1253,-141"/>
+<text text-anchor="start" x="1288.5" y="-151.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="1430" y="-151.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="1253,-113 1253,-141 1376,-141 1376,-113 1253,-113"/>
+<text text-anchor="start" x="1288.5" y="-123.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="1411.5" y="-123.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="1253,-85 1253,-113 1376,-113 1376,-85 1253,-85"/>
+<text text-anchor="start" x="1288.5" y="-95.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="1411.5" y="-95.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="1253,-57 1253,-85 1376,-85 1376,-57 1253,-57"/>
+<text text-anchor="start" x="1288.5" y="-67.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="1430" y="-67.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="1253,-29 1253,-57 1376,-57 1376,-29 1253,-29"/>
+<text text-anchor="start" x="1288.5" y="-39.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="1436.5" y="-39.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="1260" y="-11.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="1252,0 1252,-198 1586,-198 1586,0 1252,0"/>
+</g>
+<!-- n_CRIT_WS&#45;&gt;legend -->
+</g>
+</svg>
+</div></section><section class="block"><h4>重点边界拓扑图</h4><div class="diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1972pt" height="353pt"
+ viewBox="18.00 18.00 1954.20 335.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 295.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-277.6 1896.6,-277.6 1896.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="84.5" y="-216.4" font-family="Arial" font-size="22.00" fill="#0f172a">重点边界拓扑图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_OUTER</title>
+<path fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.8" d="M20,-10C20,-10 200,-10 200,-10 206,-10 212,-16 212,-22 212,-22 212,-146 212,-146 212,-152 206,-158 200,-158 200,-158 20,-158 20,-158 14,-158 8,-152 8,-146 8,-146 8,-22 8,-22 8,-16 14,-10 20,-10"/>
+<text text-anchor="middle" x="70.5" y="-136.4" font-family="Arial" font-size="22.00" fill="#334155">外部访问域</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_n_MID</title>
+<path fill="#eef5ff" stroke="#6aa7ff" stroke-width="1.8" d="M452,-42C452,-42 610,-42 610,-42 616,-42 622,-48 622,-54 622,-54 622,-178 622,-178 622,-184 616,-190 610,-190 610,-190 452,-190 452,-190 446,-190 440,-184 440,-178 440,-178 440,-54 440,-54 440,-48 446,-42 452,-42"/>
+<text text-anchor="middle" x="502.5" y="-168.4" font-family="Arial" font-size="22.00" fill="#1d4ed8">服务边界域</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_n_INNER</title>
+<path fill="#fff7ed" stroke="#fdba74" stroke-width="1.8" d="M890,-8C890,-8 1334,-8 1334,-8 1340,-8 1346,-14 1346,-20 1346,-20 1346,-178 1346,-178 1346,-184 1340,-190 1334,-190 1334,-190 890,-190 890,-190 884,-190 878,-184 878,-178 878,-178 878,-20 878,-20 878,-14 884,-8 890,-8"/>
+<text text-anchor="middle" x="973.5" y="-168.4" font-family="Arial" font-size="22.00" fill="#c2410c">生产与关键控制域</text>
+</g>
+<!-- n_EXT -->
+<g id="node1" class="node">
+<title>n_EXT</title>
+<path fill="#ffffff" stroke="#94a3b8" stroke-width="1.7" d="M170,-96C170,-96 50,-96 50,-96 44,-96 38,-90 38,-84 38,-84 38,-52 38,-52 38,-46 44,-40 50,-40 50,-40 170,-40 170,-40 176,-40 182,-46 182,-52 182,-52 182,-84 182,-84 182,-90 176,-96 170,-96"/>
+<text text-anchor="middle" x="110" y="-71.6" font-family="Arial" font-size="13.00" fill="#1f2937">办公/业务/运维外部</text>
+<text text-anchor="middle" x="110" y="-57.6" font-family="Arial" font-size="13.00" fill="#1f2937">访问</text>
+</g>
+<!-- n_DMZ -->
+<g id="node2" class="node">
+<title>n_DMZ</title>
+<path fill="#ffffff" stroke="#94a3b8" stroke-width="1.7" d="M580,-128C580,-128 482,-128 482,-128 476,-128 470,-122 470,-116 470,-116 470,-84 470,-84 470,-78 476,-72 482,-72 482,-72 580,-72 580,-72 586,-72 592,-78 592,-84 592,-84 592,-116 592,-116 592,-122 586,-128 580,-128"/>
+<text text-anchor="middle" x="531" y="-96.6" font-family="Arial" font-size="13.00" fill="#1f2937">服务边界/DMZ</text>
+</g>
+<!-- n_EXT&#45;&gt;n_DMZ -->
+<g id="edge1" class="edge">
+<title>n_EXT&#45;&gt;n_DMZ</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M182.37,-80C182.37,-80 461.31,-80 461.31,-80"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="461.31,-82.98 469.81,-80 461.31,-77.03 461.31,-82.98"/>
+<text text-anchor="middle" x="326" y="-135" font-family="Arial" font-size="10.00" fill="#475569">受控访问</text>
+</g>
+<!-- n_EXT&#45;&gt;n_DMZ -->
+<g id="edge6" class="edge">
+<title>n_EXT&#45;&gt;n_DMZ</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M182.37,-88C182.37,-88 461.31,-88 461.31,-88"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="461.31,-90.98 469.81,-88 461.31,-85.03 461.31,-90.98"/>
+<text text-anchor="middle" x="326" y="-40" font-family="Arial" font-size="10.00" fill="#b45309">仅允许业务所需方向与端口，按白名单放通</text>
+</g>
+<!-- n_CORE -->
+<g id="node3" class="node">
+<title>n_CORE</title>
+<path fill="#ffffff" stroke="#94a3b8" stroke-width="1.7" d="M1018,-128C1018,-128 920,-128 920,-128 914,-128 908,-122 908,-116 908,-116 908,-84 908,-84 908,-78 914,-72 920,-72 920,-72 1018,-72 1018,-72 1024,-72 1030,-78 1030,-84 1030,-84 1030,-116 1030,-116 1030,-122 1024,-128 1018,-128"/>
+<text text-anchor="middle" x="969" y="-96.6" font-family="Arial" font-size="13.00" fill="#1f2937">监控核心区</text>
+</g>
+<!-- n_DMZ&#45;&gt;n_CORE -->
+<g id="edge2" class="edge">
+<title>n_DMZ&#45;&gt;n_CORE</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M592.36,-86C592.36,-86 899.2,-86 899.2,-86"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="899.2,-88.98 907.7,-86 899.2,-83.03 899.2,-88.98"/>
+<text text-anchor="middle" x="750" y="-198" font-family="Arial" font-size="10.00" fill="#475569">接口/服务转发</text>
+</g>
+<!-- n_DMZ&#45;&gt;n_CORE -->
+<g id="edge4" class="edge">
+<title>n_DMZ&#45;&gt;n_CORE</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M592.36,-100C592.36,-100 899.2,-100 899.2,-100"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="899.2,-102.98 907.7,-100 899.2,-97.03 899.2,-102.98"/>
+<text text-anchor="middle" x="750" y="-103" font-family="Arial" font-size="10.00" fill="#b45309">MES 与办公网/管理网之间通过受控服务边界交互</text>
+</g>
+<!-- n_DMZ&#45;&gt;n_CORE -->
+<g id="edge5" class="edge">
+<title>n_DMZ&#45;&gt;n_CORE</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M592.36,-114C592.36,-114 899.2,-114 899.2,-114"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="899.2,-116.98 907.7,-114 899.2,-111.03 899.2,-116.98"/>
+<text text-anchor="middle" x="750" y="-8" font-family="Arial" font-size="10.00" fill="#b45309">关键系统区采用独立边界控制与独立访问策略</text>
+</g>
+<!-- n_HC -->
+<g id="node4" class="node">
+<title>n_HC</title>
+<path fill="#ffffff" stroke="#94a3b8" stroke-width="1.7" d="M1304,-128C1304,-128 1206,-128 1206,-128 1200,-128 1194,-122 1194,-116 1194,-116 1194,-84 1194,-84 1194,-78 1200,-72 1206,-72 1206,-72 1304,-72 1304,-72 1310,-72 1316,-78 1316,-84 1316,-84 1316,-116 1316,-116 1316,-122 1310,-128 1304,-128"/>
+<text text-anchor="middle" x="1255" y="-96.6" font-family="Arial" font-size="13.00" fill="#1f2937">高关键对象区</text>
+</g>
+<!-- n_CORE&#45;&gt;n_HC -->
+<g id="edge3" class="edge">
+<title>n_CORE&#45;&gt;n_HC</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M1030,-100C1030,-100 1185.1,-100 1185.1,-100"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1185.1,-102.98 1193.6,-100 1185.1,-97.03 1185.1,-102.98"/>
+<text text-anchor="middle" x="1112" y="-120" font-family="Arial" font-size="10.00" fill="#475569">受控采集/运维</text>
+</g>
+<!-- legend -->
+<g id="node5" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M1845,-199C1845,-199 1535,-199 1535,-199 1529,-199 1523,-193 1523,-187 1523,-187 1523,-13 1523,-13 1523,-7 1529,-1 1535,-1 1535,-1 1845,-1 1845,-1 1851,-1 1857,-7 1857,-13 1857,-13 1857,-187 1857,-187 1857,-193 1851,-199 1845,-199"/>
+<polygon fill="#f8fafc" stroke="transparent" points="1524,-170 1524,-198 1856,-198 1856,-170 1524,-170"/>
+<text text-anchor="start" x="1677" y="-181.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="1524,-142 1524,-170 1647,-170 1647,-142 1524,-142"/>
+<text text-anchor="start" x="1559.5" y="-152.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="1701" y="-152.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="1524,-114 1524,-142 1647,-142 1647,-114 1524,-114"/>
+<text text-anchor="start" x="1559.5" y="-124.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="1682.5" y="-124.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="1524,-86 1524,-114 1647,-114 1647,-86 1524,-86"/>
+<text text-anchor="start" x="1559.5" y="-96.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="1682.5" y="-96.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="1524,-58 1524,-86 1647,-86 1647,-58 1524,-58"/>
+<text text-anchor="start" x="1559.5" y="-68.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="1701" y="-68.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="1524,-30 1524,-58 1647,-58 1647,-30 1524,-30"/>
+<text text-anchor="start" x="1559.5" y="-40.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="1707.5" y="-40.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="1531" y="-12.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="1523,-1 1523,-199 1857,-199 1857,-1 1523,-1"/>
+</g>
+<!-- n_HC&#45;&gt;legend -->
+</g>
+</svg>
+</div></section><section class="block"><h4>设计依据</h4><ul><li>区域系统汇聚后上联 MES 核心区。</li><li>办公/管理访问经接口服务边界收口。</li><li>运维访问经统一入口接入。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>跨域访问路径在完成必要性梳理后按对象、方向、协议和时间窗进行白名单化控制。</li><li>访问路径：办公网或管理网不得直接访问现场对象或关键生产支撑系统。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>MES 与上层管理系统接口范围及访问方向待客户确认。</li><li>待确认：办公到生产、运维到控制及第三方远程维护访问均应通过受控路径与边界控制点收敛。</li><li>待确认：涉及外部或第三方进入控制相关区域的访问，统一收敛到受控入口，并以身份鉴别、时间窗、最小权限和会话审计作为基础控制。</li></ul></section></section></div><div id="sec-9"><section class="chapter"><h2>地址、VLAN 与子网规划</h2><p class="para">【地址规划说明】地址与 VLAN 规划按分区对应编址、VLAN 分层组织与扩容预留统一执行，并预留后续扩容余量。</p><section class="block"><h4>地址与 VLAN 规划表</h4><div class="table-wrap"><table><thead><tr><th>编号</th><th>区域</th><th>VLAN</th><th>子网</th><th>编号/命名策略</th><th>定版约束</th></tr></thead><tbody><tr><td>IP-01</td><td>MES核心服务区</td><td>VLAN 110</td><td>10.110.0.0/24</td><td>MES-CORE-SRV</td><td>核心服务地址统一管理，不与接入区混用</td></tr><tr><td>IP-02</td><td>MES接口服务区</td><td>VLAN 120</td><td>10.120.0.0/24</td><td>MES-DMZ-IF</td><td>仅承载接口与边界服务，不部署现场对象</td></tr><tr><td>IP-03</td><td>生产支撑系统接入区</td><td>VLAN 130-139</td><td>10.130.0.0/22</td><td>MES-ACCESS-AREA</td><td>按区域和系统属性细分，保留扩容余量</td></tr><tr><td>IP-04</td><td>关键系统区</td><td>VLAN 150</td><td>10.150.0.0/24</td><td>MES-CRITICAL</td><td>独立子网、独立策略、变更纳入受控窗口</td></tr><tr><td>IP-05</td><td>运维接入区</td><td>VLAN 160</td><td>10.160.0.0/24</td><td>MES-OAM</td><td>仅承载运维终端、堡垒机与审计设备</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>现网地址现状：既有 MES 服务器区、接口设备与部分生产支撑系统地址需保留并平滑纳入规划。</li><li>现网地址现状：现网地址体系存在按历史子系统分别建设的差异。</li><li>地址约束：既有主机与接口装置地址变更需纳入受控窗口。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>在现网存在地址复用的前提下，应优先保证边界清晰、VLAN 分段明确，并为新增产线预留地址空间。</li><li>按区域、系统属性、边界级别和用途组织地址空间，对关键系统区、服务边界区和运维区预留独立网段。</li><li>按区域、安全边界与用途组织网段与 VLAN，并为后续新增产线预留地址空间。</li></ul></section></section></div><div id="sec-10"><section class="chapter"><h2>关键设备部署方案</h2><p class="para">【设备部署说明】关键设备部署按边界控制设备、汇聚交换设备与运维接入节点统筹部署实施，并与现场机房条件及维护路径同步校核。关键系统边界设备部署位置待现场复核的确认将直接影响设备最终落位。</p><section class="block"><h4>关键网络设备表</h4><div class="table-wrap"><table><thead><tr><th>设备标识</th><th>设备角色</th><th>重要级别</th></tr></thead><tbody><tr><td>CORE-SW-A</td><td>核心交换机</td><td>高</td></tr><tr><td>CORE-SW-B</td><td>核心交换机</td><td>高</td></tr><tr><td>FW-A</td><td>边界防火墙</td><td>高</td></tr><tr><td>FW-B</td><td>边界防火墙</td><td>高</td></tr><tr><td>CRIT-FW</td><td>关键系统边界防火墙</td><td>高</td></tr><tr><td>AGG-01</td><td>区域汇聚交换机</td><td>中</td></tr><tr><td>AGG-02</td><td>区域汇聚交换机</td><td>中</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>核心交换机。</li><li>汇聚交换机。</li><li>边界防火墙。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>关键设备部署应以厂级机房、车间弱电间和产线控制柜为主，同时保留安全边界设备位置待现场复核。</li><li>在可靠性目标尚未量化前，对关键链路与关键边界控制节点提出原则性冗余，而不直接承诺具体冗余架构。</li><li>边界防火墙。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-11"><section class="chapter"><h2>通信与运维接入方案</h2><section class="block"><h4>设计依据</h4><ul><li>业务通信：生产支撑系统数据经汇聚交换后上联 MES 核心服务区。</li><li>业务通信：接口服务器与上层管理/报表系统通过服务边界区受控交互。</li><li>业务通信：关键工作站和维护终端通过运维接入区访问授权目标。</li><li>访问路径：办公网或管理网不得直接访问现场对象或关键生产支撑系统。</li></ul></section><section class="block"><h4>方案说明</h4><ul><li>办公到生产、运维到控制及第三方远程维护访问均应通过受控路径与边界控制点收敛。</li><li>跨域访问路径在完成必要性梳理后按对象、方向、协议和时间窗进行白名单化控制。</li><li>结合分阶段迁移和有限停机窗口约束，实施路径按先边界治理、后结构优化、再地址规范化。</li><li>涉及外部或第三方进入控制相关区域的访问，统一收敛到受控入口，并以身份鉴别、时间窗、最小权限和会话审计作为基础控制。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统隔离粒度与冗余范围待客户确认。</li><li>MES 与上层管理系统接口范围及访问方向待客户确认。</li><li>远程运维审批深度与第三方接入范围待客户确认。</li></ul></section></section></div><div id="sec-12"><section class="chapter"><h2>实施方案与切换策略</h2><p class="para">【实施安排】基于实施窗口需服从生产计划与检修安排这一实施约束，后续实施按先边界治理、后结构优化、再分阶段迁移验证组织详细计划、施工窗口与验证步骤。在关键系统隔离粒度与冗余范围待客户确认完成确认前，最终实施定版暂不下发。</p><section class="block"><h4>实施阶段表</h4><div class="table-wrap"><table><thead><tr><th>阶段</th><th>实施内容</th><th>交付结果</th></tr></thead><tbody><tr><td>阶段一</td><td>完成现场复核、对象梳理、接口核定与边界确认。</td><td>形成实施边界、设备清单和接入对象清单。</td></tr><tr><td>阶段二</td><td>完成边界策略、地址规划、设备部署与施工图定版。</td><td>形成施工图、地址表、VLAN 表和访问控制表。</td></tr><tr><td>阶段三</td><td>按窗口分批接入、联调验证、切换与验收移交。</td><td>关键系统隔离粒度与冗余范围待客户确认。</td></tr></tbody></table></div></section><section class="block"><h4>设计依据</h4><ul><li>实施窗口需服从生产计划与检修安排。</li><li>部分既有服务器、工作站和接口装置地址调整能力有限。</li><li>关键区域设备部署、布线与切换需遵守现场管理要求。</li><li>实施关注：关键接口链路在切换期间不可中断。</li></ul></section><section class="block"><h4>实施安排</h4><ul><li>结合分阶段迁移和有限停机窗口约束，实施路径按先边界治理、后结构优化、再地址规范化。</li><li>在可靠性目标尚未量化前，对关键链路与关键边界控制节点提出原则性冗余，而不直接承诺具体冗余架构。</li><li>在可靠性目标未量化前，先对关键链路、关键边界控制节点和关键业务路径提出原则性冗余，不直接承诺具体冗余架构。</li><li>若停机容忍度低但目标等级仍未确认，实施节奏先完成目标量化、关键对象分级和物理路径核实，再进入设备与链路级冗余落地。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统隔离粒度与冗余范围待客户确认。</li><li>MES 与上层管理系统接口范围及访问方向待客户确认。</li><li>远程运维审批深度与第三方接入范围待客户确认。</li></ul></section></section></div><div id="sec-13"><section class="chapter"><h2>风险分析与待确认事项</h2><p class="para">【风险说明】默认各生产支撑系统具备本地控制能力后再纳入 MES作为当前实施边界前提。优先完成关键系统边界设备部署位置待现场复核闭环确认。</p><section class="block"><h4>设计依据</h4><ul><li>关键接口链路在切换期间不可中断。</li><li>关键系统区不得暴露在非受控访问路径上。</li></ul></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><div id="sec-14"><section class="chapter"><h2>实施结论与定版条件</h2><p class="para">【执行结论】后续工作按现场复核、接口确认、实施定版和分阶段落地四项任务组织执行。其中，关键系统边界设备部署位置待现场复核作为实施定稿下发前的优先闭环事项。</p><section class="block"><h4>实施闭环表</h4><div class="table-wrap"><table><thead><tr><th>编号</th><th>闭环事项</th><th>当前状态</th><th>后续动作</th></tr></thead><tbody><tr><td>CL-01</td><td>总体架构与边界方案</td><td>已明确</td><td>按正式版输出进入深化设计。</td></tr><tr><td>CL-02</td><td>地址、设备与访问细项</td><td>待现场复核后锁定</td><td>关键系统边界设备部署位置待现场复核。</td></tr><tr><td>CL-03</td><td>实施组织与验收边界</td><td>可启动</td><td>各区域汇聚交换机与接口设备部署位置待现场复核。</td></tr></tbody></table></div></section><section class="block"><h4>待确认项</h4><ul><li>关键系统边界设备部署位置待现场复核。</li><li>各区域汇聚交换机与接口设备部署位置待现场复核。</li><li>中心机房与区域弱电间之间主干链路条件待现场复核。</li></ul></section></section></div><section class="chapter appendix"><h2>附录</h2><p class="para">方案涉及对象摘要：MES核心服务平台、接口服务系统、生产支撑系统、关键系统、运维审计系统、核心交换机。</p><p class="para">网络规划摘要：既有 MES 服务器区、接口设备与部分生产支撑系统地址需保留并平滑纳入规划。</p><p class="para">关键连接摘要：区域系统汇聚后上联 MES 核心区；办公/管理访问经接口服务边界收口；运维访问经统一入口接入。</p><section class="block"><h4>核心区设备拓扑图</h4><div class="diagram large-diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1095pt" height="666pt"
+ viewBox="18.00 18.00 1077.20 648.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 608.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-590.6 1019.6,-590.6 1019.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="95.5" y="-529.4" font-family="Arial" font-size="22.00" fill="#0f172a">核心区设备拓扑图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_ZONE_CORE</title>
+<path fill="#eef2ff" stroke="#8b9cf6" stroke-width="1.8" d="M20,-228C20,-228 892,-228 892,-228 898,-228 904,-234 904,-240 904,-240 904,-499 904,-499 904,-505 898,-511 892,-511 892,-511 20,-511 20,-511 14,-511 8,-505 8,-499 8,-499 8,-240 8,-240 8,-234 14,-228 20,-228"/>
+<text text-anchor="middle" x="94.5" y="-489.4" font-family="Arial" font-size="22.00" fill="#4338ca">MES核心服务区</text>
+</g>
+<!-- n_CORE_SW_A -->
+<g id="node1" class="node">
+<title>n_CORE_SW_A</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M462.5,-314C462.5,-314 364.5,-314 364.5,-314 358.5,-314 352.5,-308 352.5,-302 352.5,-302 352.5,-270 352.5,-270 352.5,-264 358.5,-258 364.5,-258 364.5,-258 462.5,-258 462.5,-258 468.5,-258 474.5,-264 474.5,-270 474.5,-270 474.5,-302 474.5,-302 474.5,-308 468.5,-314 462.5,-314"/>
+<text text-anchor="middle" x="413.5" y="-282.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 A</text>
+</g>
+<!-- n_CORE_SW_B -->
+<g id="node2" class="node">
+<title>n_CORE_SW_B</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M862,-407C862,-407 764,-407 764,-407 758,-407 752,-401 752,-395 752,-395 752,-363 752,-363 752,-357 758,-351 764,-351 764,-351 862,-351 862,-351 868,-351 874,-357 874,-363 874,-363 874,-395 874,-395 874,-401 868,-407 862,-407"/>
+<text text-anchor="middle" x="813" y="-375.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 B</text>
+</g>
+<!-- n_CORE_SW_A&#45;&gt;n_CORE_SW_B -->
+<g id="edge1" class="edge">
+<title>n_CORE_SW_A&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M414,-314.16C414,-339.24 414,-372 414,-372 414,-372 743.47,-372 743.47,-372"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="743.47,-374.98 751.97,-372 743.47,-369.03 743.47,-374.98"/>
+<text text-anchor="middle" x="565.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">核心冗余互联</text>
+</g>
+<!-- n_MES_APP -->
+<g id="node3" class="node">
+<title>n_MES_APP</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M163,-449C163,-449 56,-449 56,-449 50,-449 44,-443 44,-437 44,-437 44,-405 44,-405 44,-399 50,-393 56,-393 56,-393 163,-393 163,-393 169,-393 175,-399 175,-405 175,-405 175,-437 175,-437 175,-443 169,-449 163,-449"/>
+<text text-anchor="middle" x="109.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 应用服务器</text>
+</g>
+<!-- n_MES_APP&#45;&gt;n_CORE_SW_A -->
+<g id="edge2" class="edge">
+<title>n_MES_APP&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M175.06,-421C216.39,-421 262,-421 262,-421 262,-421 262,-295.33 262,-295.33 262,-295.33 343.82,-295.33 343.82,-295.33"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.82,-298.31 352.32,-295.33 343.82,-292.36 343.82,-298.31"/>
+<text text-anchor="middle" x="261.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">业务接入</text>
+</g>
+<!-- n_MES_DB -->
+<g id="node4" class="node">
+<title>n_MES_DB</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M473,-449C473,-449 354,-449 354,-449 348,-449 342,-443 342,-437 342,-437 342,-405 342,-405 342,-399 348,-393 354,-393 354,-393 473,-393 473,-393 479,-393 485,-399 485,-405 485,-405 485,-437 485,-437 485,-443 479,-449 473,-449"/>
+<text text-anchor="middle" x="413.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 数据库服务器</text>
+</g>
+<!-- n_MES_DB&#45;&gt;n_CORE_SW_B -->
+<g id="edge3" class="edge">
+<title>n_MES_DB&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M485.38,-400C485.38,-400 743.33,-400 743.33,-400"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="743.33,-402.98 751.83,-400 743.33,-397.03 743.33,-402.98"/>
+<text text-anchor="middle" x="565.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">数据库接入</text>
+</g>
+<!-- n_MES_HIS -->
+<g id="node5" class="node">
+<title>n_MES_HIS</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M169,-314C169,-314 50,-314 50,-314 44,-314 38,-308 38,-302 38,-302 38,-270 38,-270 38,-264 44,-258 50,-258 50,-258 169,-258 169,-258 175,-258 181,-264 181,-270 181,-270 181,-302 181,-302 181,-308 175,-314 169,-314"/>
+<text text-anchor="middle" x="109.5" y="-289.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 历史数据服务</text>
+<text text-anchor="middle" x="109.5" y="-275.6" font-family="Arial" font-size="13.00" fill="#6d28d9">器</text>
+</g>
+<!-- n_MES_HIS&#45;&gt;n_CORE_SW_A -->
+<g id="edge4" class="edge">
+<title>n_MES_HIS&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M181.16,-276.67C181.16,-276.67 343.58,-276.67 343.58,-276.67"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.58,-279.64 352.08,-276.67 343.58,-273.69 343.58,-279.64"/>
+<text text-anchor="middle" x="261.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">历史数据接入</text>
+</g>
+<!-- legend -->
+<g id="node6" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M968,-198C968,-198 658,-198 658,-198 652,-198 646,-192 646,-186 646,-186 646,-12 646,-12 646,-6 652,0 658,0 658,0 968,0 968,0 974,0 980,-6 980,-12 980,-12 980,-186 980,-186 980,-192 974,-198 968,-198"/>
+<polygon fill="#f8fafc" stroke="transparent" points="647,-169 647,-197 979,-197 979,-169 647,-169"/>
+<text text-anchor="start" x="800" y="-180.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="647,-141 647,-169 770,-169 770,-141 647,-141"/>
+<text text-anchor="start" x="682.5" y="-151.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="824" y="-151.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="647,-113 647,-141 770,-141 770,-113 647,-113"/>
+<text text-anchor="start" x="682.5" y="-123.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="805.5" y="-123.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="647,-85 647,-113 770,-113 770,-85 647,-85"/>
+<text text-anchor="start" x="682.5" y="-95.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="805.5" y="-95.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="647,-57 647,-85 770,-85 770,-57 647,-57"/>
+<text text-anchor="start" x="682.5" y="-67.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="824" y="-67.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="647,-29 647,-57 770,-57 770,-29 647,-29"/>
+<text text-anchor="start" x="682.5" y="-39.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="830.5" y="-39.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="654" y="-11.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="646,0 646,-198 980,-198 980,0 646,0"/>
+</g>
+<!-- n_MES_HIS&#45;&gt;legend -->
+</g>
+</svg>
+</div></section><section class="block"><h4>边界与接口拓扑图</h4><div class="diagram large-diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1095pt" height="951pt"
+ viewBox="18.00 18.00 1077.20 933.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 893.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-875.6 1019.6,-875.6 1019.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="95.5" y="-814.4" font-family="Arial" font-size="22.00" fill="#0f172a">边界与接口拓扑图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_ZONE_DMZ</title>
+<path fill="#eef5ff" stroke="#6aa7ff" stroke-width="1.8" d="M30.5,-513C30.5,-513 901,-513 901,-513 907,-513 913,-519 913,-525 913,-525 913,-784 913,-784 913,-790 907,-796 901,-796 901,-796 30.5,-796 30.5,-796 24.5,-796 18.5,-790 18.5,-784 18.5,-784 18.5,-525 18.5,-525 18.5,-519 24.5,-513 30.5,-513"/>
+<text text-anchor="middle" x="160.5" y="-774.4" font-family="Arial" font-size="22.00" fill="#1d4ed8">办公/管理与接口服务边界区</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_n_ZONE_CORE</title>
+<path fill="#eef2ff" stroke="#8b9cf6" stroke-width="1.8" d="M20,-228C20,-228 892,-228 892,-228 898,-228 904,-234 904,-240 904,-240 904,-499 904,-499 904,-505 898,-511 892,-511 892,-511 20,-511 20,-511 14,-511 8,-505 8,-499 8,-499 8,-240 8,-240 8,-234 14,-228 20,-228"/>
+<text text-anchor="middle" x="94.5" y="-489.4" font-family="Arial" font-size="22.00" fill="#4338ca">MES核心服务区</text>
+</g>
+<!-- n_FW_A -->
+<g id="node1" class="node">
+<title>n_FW_A</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M158.5,-650C158.5,-650 60.5,-650 60.5,-650 54.5,-650 48.5,-644 48.5,-638 48.5,-638 48.5,-606 48.5,-606 48.5,-600 54.5,-594 60.5,-594 60.5,-594 158.5,-594 158.5,-594 164.5,-594 170.5,-600 170.5,-606 170.5,-606 170.5,-638 170.5,-638 170.5,-644 164.5,-650 158.5,-650"/>
+<text text-anchor="middle" x="109.5" y="-618.6" font-family="Arial" font-size="13.00" fill="#9f1239">边界防火墙 A</text>
+</g>
+<!-- n_FW_B -->
+<g id="node2" class="node">
+<title>n_FW_B</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M462.5,-599C462.5,-599 364.5,-599 364.5,-599 358.5,-599 352.5,-593 352.5,-587 352.5,-587 352.5,-555 352.5,-555 352.5,-549 358.5,-543 364.5,-543 364.5,-543 462.5,-543 462.5,-543 468.5,-543 474.5,-549 474.5,-555 474.5,-555 474.5,-587 474.5,-587 474.5,-593 468.5,-599 462.5,-599"/>
+<text text-anchor="middle" x="413.5" y="-567.6" font-family="Arial" font-size="13.00" fill="#9f1239">边界防火墙 B</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_FW_B -->
+<g id="edge1" class="edge">
+<title>n_FW_A&#45;&gt;n_FW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M170.53,-624.5C254.13,-624.5 394,-624.5 394,-624.5 394,-624.5 394,-607.5 394,-607.5"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="396.98,-607.5 394,-599 391.03,-607.5 396.98,-607.5"/>
+<text text-anchor="middle" x="261.5" y="-625" font-family="Arial" font-size="10.00" fill="#475569">双机冗余</text>
+</g>
+<!-- n_IF_SRV -->
+<g id="node3" class="node">
+<title>n_IF_SRV</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M463.5,-734C463.5,-734 363.5,-734 363.5,-734 357.5,-734 351.5,-728 351.5,-722 351.5,-722 351.5,-690 351.5,-690 351.5,-684 357.5,-678 363.5,-678 363.5,-678 463.5,-678 463.5,-678 469.5,-678 475.5,-684 475.5,-690 475.5,-690 475.5,-722 475.5,-722 475.5,-728 469.5,-734 463.5,-734"/>
+<text text-anchor="middle" x="413.5" y="-702.6" font-family="Arial" font-size="13.00" fill="#6d28d9">接口服务服务器</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_IF_SRV -->
+<g id="edge2" class="edge">
+<title>n_FW_A&#45;&gt;n_IF_SRV</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M170.54,-637.25C264.54,-637.25 434,-637.25 434,-637.25 434,-637.25 434,-669.14 434,-669.14"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="431.03,-669.14 434,-677.64 436.98,-669.14 431.03,-669.14"/>
+<text text-anchor="middle" x="261.5" y="-720" font-family="Arial" font-size="10.00" fill="#475569">接口服务接入</text>
+</g>
+<!-- n_CORE_SW_A -->
+<g id="node5" class="node">
+<title>n_CORE_SW_A</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M462.5,-314C462.5,-314 364.5,-314 364.5,-314 358.5,-314 352.5,-308 352.5,-302 352.5,-302 352.5,-270 352.5,-270 352.5,-264 358.5,-258 364.5,-258 364.5,-258 462.5,-258 462.5,-258 468.5,-258 474.5,-264 474.5,-270 474.5,-270 474.5,-302 474.5,-302 474.5,-308 468.5,-314 462.5,-314"/>
+<text text-anchor="middle" x="413.5" y="-282.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 A</text>
+</g>
+<!-- n_FW_A&#45;&gt;n_CORE_SW_A -->
+<g id="edge4" class="edge">
+<title>n_FW_A&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M170.52,-611.75C222.56,-611.75 289,-611.75 289,-611.75 289,-611.75 289,-300 289,-300 289,-300 343.84,-300 343.84,-300"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.84,-302.98 352.34,-300 343.84,-297.03 343.84,-302.98"/>
+<text text-anchor="middle" x="261.5" y="-530" font-family="Arial" font-size="10.00" fill="#475569">受控边界接入</text>
+</g>
+<!-- n_AUDIT -->
+<g id="node4" class="node">
+<title>n_AUDIT</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M871,-650C871,-650 755,-650 755,-650 749,-650 743,-644 743,-638 743,-638 743,-606 743,-606 743,-600 749,-594 755,-594 755,-594 871,-594 871,-594 877,-594 883,-600 883,-606 883,-606 883,-638 883,-638 883,-644 877,-650 871,-650"/>
+<text text-anchor="middle" x="813" y="-618.6" font-family="Arial" font-size="13.00" fill="#6d28d9">堡垒机/审计服务器</text>
+</g>
+<!-- n_FW_B&#45;&gt;n_AUDIT -->
+<g id="edge3" class="edge">
+<title>n_FW_B&#45;&gt;n_AUDIT</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M474.85,-577C571.42,-577 748,-577 748,-577 748,-577 748,-585.26 748,-585.26"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="745.03,-585.26 748,-593.76 750.98,-585.26 745.03,-585.26"/>
+<text text-anchor="middle" x="565.5" y="-625" font-family="Arial" font-size="10.00" fill="#475569">运维审计接入</text>
+</g>
+<!-- n_CORE_SW_B -->
+<g id="node6" class="node">
+<title>n_CORE_SW_B</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M862,-449C862,-449 764,-449 764,-449 758,-449 752,-443 752,-437 752,-437 752,-405 752,-405 752,-399 758,-393 764,-393 764,-393 862,-393 862,-393 868,-393 874,-399 874,-405 874,-405 874,-437 874,-437 874,-443 868,-449 862,-449"/>
+<text text-anchor="middle" x="813" y="-417.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 B</text>
+</g>
+<!-- n_FW_B&#45;&gt;n_CORE_SW_B -->
+<g id="edge5" class="edge">
+<title>n_FW_B&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M474.76,-560C586.96,-560 814,-560 814,-560 814,-560 814,-457.63 814,-457.63"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="816.98,-457.63 814,-449.13 811.03,-457.63 816.98,-457.63"/>
+<text text-anchor="middle" x="565.5" y="-530" font-family="Arial" font-size="10.00" fill="#475569">受控边界接入</text>
+</g>
+<!-- n_CORE_SW_A&#45;&gt;n_CORE_SW_B -->
+<g id="edge6" class="edge">
+<title>n_CORE_SW_A&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M474.76,-286C586.96,-286 814,-286 814,-286 814,-286 814,-384.2 814,-384.2"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="811.03,-384.2 814,-392.7 816.98,-384.2 811.03,-384.2"/>
+<text text-anchor="middle" x="565.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">核心冗余互联</text>
+</g>
+<!-- n_MES_APP -->
+<g id="node7" class="node">
+<title>n_MES_APP</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M163,-449C163,-449 56,-449 56,-449 50,-449 44,-443 44,-437 44,-437 44,-405 44,-405 44,-399 50,-393 56,-393 56,-393 163,-393 163,-393 169,-393 175,-399 175,-405 175,-405 175,-437 175,-437 175,-443 169,-449 163,-449"/>
+<text text-anchor="middle" x="109.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 应用服务器</text>
+</g>
+<!-- n_MES_APP&#45;&gt;n_CORE_SW_A -->
+<g id="edge7" class="edge">
+<title>n_MES_APP&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M175.19,-421C205.56,-421 235,-421 235,-421 235,-421 235,-286 235,-286 235,-286 343.57,-286 343.57,-286"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.57,-288.98 352.07,-286 343.57,-283.03 343.57,-288.98"/>
+<text text-anchor="middle" x="261.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">业务接入</text>
+</g>
+<!-- n_MES_DB -->
+<g id="node8" class="node">
+<title>n_MES_DB</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M473,-449C473,-449 354,-449 354,-449 348,-449 342,-443 342,-437 342,-437 342,-405 342,-405 342,-399 348,-393 354,-393 354,-393 473,-393 473,-393 479,-393 485,-399 485,-405 485,-405 485,-437 485,-437 485,-443 479,-449 473,-449"/>
+<text text-anchor="middle" x="413.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 数据库服务器</text>
+</g>
+<!-- n_MES_DB&#45;&gt;n_CORE_SW_B -->
+<g id="edge8" class="edge">
+<title>n_MES_DB&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M485.38,-421C485.38,-421 743.33,-421 743.33,-421"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="743.33,-423.98 751.83,-421 743.33,-418.03 743.33,-423.98"/>
+<text text-anchor="middle" x="565.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">数据库接入</text>
+</g>
+<!-- n_MES_HIS -->
+<g id="node9" class="node">
+<title>n_MES_HIS</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M169,-314C169,-314 50,-314 50,-314 44,-314 38,-308 38,-302 38,-302 38,-270 38,-270 38,-264 44,-258 50,-258 50,-258 169,-258 169,-258 175,-258 181,-264 181,-270 181,-270 181,-302 181,-302 181,-308 175,-314 169,-314"/>
+<text text-anchor="middle" x="109.5" y="-289.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 历史数据服务</text>
+<text text-anchor="middle" x="109.5" y="-275.6" font-family="Arial" font-size="13.00" fill="#6d28d9">器</text>
+</g>
+<!-- n_MES_HIS&#45;&gt;n_CORE_SW_A -->
+<g id="edge9" class="edge">
+<title>n_MES_HIS&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M181.16,-272C181.16,-272 343.58,-272 343.58,-272"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.58,-274.98 352.08,-272 343.58,-269.03 343.58,-274.98"/>
+<text text-anchor="middle" x="261.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">历史数据接入</text>
+</g>
+<!-- legend -->
+<g id="node10" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M968,-198C968,-198 658,-198 658,-198 652,-198 646,-192 646,-186 646,-186 646,-12 646,-12 646,-6 652,0 658,0 658,0 968,0 968,0 974,0 980,-6 980,-12 980,-12 980,-186 980,-186 980,-192 974,-198 968,-198"/>
+<polygon fill="#f8fafc" stroke="transparent" points="647,-169 647,-197 979,-197 979,-169 647,-169"/>
+<text text-anchor="start" x="800" y="-180.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="647,-141 647,-169 770,-169 770,-141 647,-141"/>
+<text text-anchor="start" x="682.5" y="-151.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="824" y="-151.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="647,-113 647,-141 770,-141 770,-113 647,-113"/>
+<text text-anchor="start" x="682.5" y="-123.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="805.5" y="-123.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="647,-85 647,-113 770,-113 770,-85 647,-85"/>
+<text text-anchor="start" x="682.5" y="-95.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="805.5" y="-95.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="647,-57 647,-85 770,-85 770,-57 647,-57"/>
+<text text-anchor="start" x="682.5" y="-67.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="824" y="-67.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="647,-29 647,-57 770,-57 770,-29 647,-29"/>
+<text text-anchor="start" x="682.5" y="-39.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="830.5" y="-39.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="654" y="-11.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="646,0 646,-198 980,-198 980,0 646,0"/>
+</g>
+<!-- n_MES_HIS&#45;&gt;legend -->
+</g>
+</svg>
+</div></section><section class="block"><h4>关键系统独立边界图</h4><div class="diagram large-diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1441pt" height="848pt"
+ viewBox="18.00 18.00 1423.20 830.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 790.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-772.6 1365.6,-772.6 1365.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="106" y="-711.4" font-family="Arial" font-size="22.00" fill="#0f172a">关键系统独立边界图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_ZONE_CRITICAL</title>
+<path fill="#eef5ff" stroke="#6aa7ff" stroke-width="1.8" d="M20,-8C20,-8 829,-8 829,-8 835,-8 841,-14 841,-20 841,-20 841,-178 841,-178 841,-184 835,-190 829,-190 829,-190 20,-190 20,-190 14,-190 8,-184 8,-178 8,-178 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="114" y="-168.4" font-family="Arial" font-size="22.00" fill="#1d4ed8">关键系统独立边界区</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_n_ZONE_CORE</title>
+<path fill="#eef2ff" stroke="#8b9cf6" stroke-width="1.8" d="M337,-190C337,-190 1238,-190 1238,-190 1244,-190 1250,-196 1250,-202 1250,-202 1250,-461 1250,-461 1250,-467 1244,-473 1238,-473 1238,-473 337,-473 337,-473 331,-473 325,-467 325,-461 325,-461 325,-202 325,-202 325,-196 331,-190 337,-190"/>
+<text text-anchor="middle" x="411.5" y="-451.4" font-family="Arial" font-size="22.00" fill="#4338ca">MES核心服务区</text>
+</g>
+<!-- n_CRIT_FW -->
+<g id="node1" class="node">
+<title>n_CRIT_FW</title>
+<path fill="#fff1f2" stroke="#fb7185" stroke-width="1.7" d="M799,-128C799,-128 674,-128 674,-128 668,-128 662,-122 662,-116 662,-116 662,-84 662,-84 662,-78 668,-72 674,-72 674,-72 799,-72 799,-72 805,-72 811,-78 811,-84 811,-84 811,-116 811,-116 811,-122 805,-128 799,-128"/>
+<text text-anchor="middle" x="736.5" y="-96.6" font-family="Arial" font-size="13.00" fill="#9f1239">关键系统边界防火墙</text>
+</g>
+<!-- n_CORE_SW_B -->
+<g id="node5" class="node">
+<title>n_CORE_SW_B</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M1208,-327C1208,-327 1110,-327 1110,-327 1104,-327 1098,-321 1098,-315 1098,-315 1098,-283 1098,-283 1098,-277 1104,-271 1110,-271 1110,-271 1208,-271 1208,-271 1214,-271 1220,-277 1220,-283 1220,-283 1220,-315 1220,-315 1220,-321 1214,-327 1208,-327"/>
+<text text-anchor="middle" x="1159" y="-295.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 B</text>
+</g>
+<!-- n_CRIT_FW&#45;&gt;n_CORE_SW_B -->
+<g id="edge5" class="edge">
+<title>n_CRIT_FW&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M801,-128.26C801,-180.91 801,-288.75 801,-288.75 801,-288.75 1089.36,-288.75 1089.36,-288.75"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1089.36,-291.73 1097.86,-288.75 1089.36,-285.78 1089.36,-291.73"/>
+<text text-anchor="middle" x="901.5" y="-155" font-family="Arial" font-size="10.00" fill="#475569">关键系统受控边界</text>
+</g>
+<!-- n_CRIT_SW -->
+<g id="node2" class="node">
+<title>n_CRIT_SW</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M489,-128C489,-128 364,-128 364,-128 358,-128 352,-122 352,-116 352,-116 352,-84 352,-84 352,-78 358,-72 364,-72 364,-72 489,-72 489,-72 495,-72 501,-78 501,-84 501,-84 501,-116 501,-116 501,-122 495,-128 489,-128"/>
+<text text-anchor="middle" x="426.5" y="-96.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">关键系统汇聚交换机</text>
+</g>
+<!-- n_CRIT_SW&#45;&gt;n_CRIT_FW -->
+<g id="edge6" class="edge">
+<title>n_CRIT_SW&#45;&gt;n_CRIT_FW</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M501.15,-100C501.15,-100 653.46,-100 653.46,-100"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="653.46,-102.98 661.96,-100 653.46,-97.03 653.46,-102.98"/>
+<text text-anchor="middle" x="581.5" y="-120" font-family="Arial" font-size="10.00" fill="#475569">边界内汇聚</text>
+</g>
+<!-- n_CRIT_WS -->
+<g id="node3" class="node">
+<title>n_CRIT_WS</title>
+<path fill="#f8fafc" stroke="#94a3b8" stroke-width="1.7" d="M179,-128C179,-128 50,-128 50,-128 44,-128 38,-122 38,-116 38,-116 38,-84 38,-84 38,-78 44,-72 50,-72 50,-72 179,-72 179,-72 185,-72 191,-78 191,-84 191,-84 191,-116 191,-116 191,-122 185,-128 179,-128"/>
+<text text-anchor="middle" x="114.5" y="-103.6" font-family="Arial" font-size="13.00" fill="#334155">关键系统工作站/专用</text>
+<text text-anchor="middle" x="114.5" y="-89.6" font-family="Arial" font-size="13.00" fill="#334155">终端</text>
+</g>
+<!-- n_CRIT_WS&#45;&gt;n_CRIT_SW -->
+<g id="edge7" class="edge">
+<title>n_CRIT_WS&#45;&gt;n_CRIT_SW</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M191.22,-100C191.22,-100 343.46,-100 343.46,-100"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="343.46,-102.98 351.96,-100 343.46,-97.03 343.46,-102.98"/>
+<text text-anchor="middle" x="271.5" y="-120" font-family="Arial" font-size="10.00" fill="#475569">关键终端接入</text>
+</g>
+<!-- n_CORE_SW_A -->
+<g id="node4" class="node">
+<title>n_CORE_SW_A</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M785.5,-276C785.5,-276 687.5,-276 687.5,-276 681.5,-276 675.5,-270 675.5,-264 675.5,-264 675.5,-232 675.5,-232 675.5,-226 681.5,-220 687.5,-220 687.5,-220 785.5,-220 785.5,-220 791.5,-220 797.5,-226 797.5,-232 797.5,-232 797.5,-264 797.5,-264 797.5,-270 791.5,-276 785.5,-276"/>
+<text text-anchor="middle" x="736.5" y="-244.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 A</text>
+</g>
+<!-- n_CORE_SW_A&#45;&gt;n_CORE_SW_B -->
+<g id="edge1" class="edge">
+<title>n_CORE_SW_A&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M737,-276C737,-288.95 737,-301.5 737,-301.5 737,-301.5 1089.14,-301.5 1089.14,-301.5"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1089.14,-304.48 1097.64,-301.5 1089.14,-298.53 1089.14,-304.48"/>
+<text text-anchor="middle" x="901.5" y="-302" font-family="Arial" font-size="10.00" fill="#475569">核心冗余互联</text>
+</g>
+<!-- n_MES_APP -->
+<g id="node6" class="node">
+<title>n_MES_APP</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M480,-276C480,-276 373,-276 373,-276 367,-276 361,-270 361,-264 361,-264 361,-232 361,-232 361,-226 367,-220 373,-220 373,-220 480,-220 480,-220 486,-220 492,-226 492,-232 492,-232 492,-264 492,-264 492,-270 486,-276 480,-276"/>
+<text text-anchor="middle" x="426.5" y="-244.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 应用服务器</text>
+</g>
+<!-- n_MES_APP&#45;&gt;n_CORE_SW_A -->
+<g id="edge2" class="edge">
+<title>n_MES_APP&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M492.24,-238.67C492.24,-238.67 666.83,-238.67 666.83,-238.67"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="666.83,-241.64 675.33,-238.67 666.83,-235.69 666.83,-241.64"/>
+<text text-anchor="middle" x="581.5" y="-302" font-family="Arial" font-size="10.00" fill="#475569">业务接入</text>
+</g>
+<!-- n_MES_DB -->
+<g id="node7" class="node">
+<title>n_MES_DB</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M796,-411C796,-411 677,-411 677,-411 671,-411 665,-405 665,-399 665,-399 665,-367 665,-367 665,-361 671,-355 677,-355 677,-355 796,-355 796,-355 802,-355 808,-361 808,-367 808,-367 808,-399 808,-399 808,-405 802,-411 796,-411"/>
+<text text-anchor="middle" x="736.5" y="-379.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 数据库服务器</text>
+</g>
+<!-- n_MES_DB&#45;&gt;n_CORE_SW_B -->
+<g id="edge3" class="edge">
+<title>n_MES_DB&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M805,-354.64C805,-335.7 805,-314.25 805,-314.25 805,-314.25 1089.24,-314.25 1089.24,-314.25"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1089.24,-317.23 1097.74,-314.25 1089.24,-311.28 1089.24,-317.23"/>
+<text text-anchor="middle" x="901.5" y="-397" font-family="Arial" font-size="10.00" fill="#475569">数据库接入</text>
+</g>
+<!-- n_MES_HIS -->
+<g id="node8" class="node">
+<title>n_MES_HIS</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M486,-411C486,-411 367,-411 367,-411 361,-411 355,-405 355,-399 355,-399 355,-367 355,-367 355,-361 361,-355 367,-355 367,-355 486,-355 486,-355 492,-355 498,-361 498,-367 498,-367 498,-399 498,-399 498,-405 492,-411 486,-411"/>
+<text text-anchor="middle" x="426.5" y="-386.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 历史数据服务</text>
+<text text-anchor="middle" x="426.5" y="-372.6" font-family="Arial" font-size="13.00" fill="#6d28d9">器</text>
+</g>
+<!-- n_MES_HIS&#45;&gt;n_CORE_SW_A -->
+<g id="edge4" class="edge">
+<title>n_MES_HIS&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M498.33,-383C539.08,-383 582,-383 582,-383 582,-383 582,-257.33 582,-257.33 582,-257.33 666.94,-257.33 666.94,-257.33"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="666.94,-260.31 675.44,-257.33 666.94,-254.36 666.94,-260.31"/>
+<text text-anchor="middle" x="581.5" y="-397" font-family="Arial" font-size="10.00" fill="#475569">历史数据接入</text>
+</g>
+<!-- legend -->
+<g id="node9" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M1314,-701C1314,-701 1004,-701 1004,-701 998,-701 992,-695 992,-689 992,-689 992,-515 992,-515 992,-509 998,-503 1004,-503 1004,-503 1314,-503 1314,-503 1320,-503 1326,-509 1326,-515 1326,-515 1326,-689 1326,-689 1326,-695 1320,-701 1314,-701"/>
+<polygon fill="#f8fafc" stroke="transparent" points="993,-672 993,-700 1325,-700 1325,-672 993,-672"/>
+<text text-anchor="start" x="1146" y="-683.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="993,-644 993,-672 1116,-672 1116,-644 993,-644"/>
+<text text-anchor="start" x="1028.5" y="-654.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="1170" y="-654.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="993,-616 993,-644 1116,-644 1116,-616 993,-616"/>
+<text text-anchor="start" x="1028.5" y="-626.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="1151.5" y="-626.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="993,-588 993,-616 1116,-616 1116,-588 993,-588"/>
+<text text-anchor="start" x="1028.5" y="-598.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="1151.5" y="-598.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="993,-560 993,-588 1116,-588 1116,-560 993,-560"/>
+<text text-anchor="start" x="1028.5" y="-570.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="1170" y="-570.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="993,-532 993,-560 1116,-560 1116,-532 993,-532"/>
+<text text-anchor="start" x="1028.5" y="-542.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="1176.5" y="-542.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="1000" y="-514.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="992,-503 992,-701 1326,-701 1326,-503 992,-503"/>
+</g>
+<!-- n_MES_HIS&#45;&gt;legend -->
+</g>
+</svg>
+</div></section><section class="block"><h4>生产支撑接入拓扑图</h4><div class="diagram large-diagram"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="1516pt" height="949pt"
+ viewBox="18.00 18.00 1498.20 931.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(57.6 891.6)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-39.6,39.6 -39.6,-873.6 1440.6,-873.6 1440.6,39.6 -39.6,39.6"/>
+<text text-anchor="middle" x="106" y="-812.4" font-family="Arial" font-size="22.00" fill="#0f172a">生产支撑接入拓扑图</text>
+<g id="clust1" class="cluster">
+<title>cluster_n_ZONE_FIELD</title>
+<path fill="#ecfeff" stroke="#67d7ef" stroke-width="1.8" d="M20,-511C20,-511 730,-511 730,-511 736,-511 742,-517 742,-523 742,-523 742,-782 742,-782 742,-788 736,-794 730,-794 730,-794 20,-794 20,-794 14,-794 8,-788 8,-782 8,-782 8,-523 8,-523 8,-517 14,-511 20,-511"/>
+<text text-anchor="middle" x="147" y="-772.4" font-family="Arial" font-size="22.00" fill="#0f766e">生产支撑系统接入与汇聚区</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_n_ZONE_CORE</title>
+<path fill="#eef2ff" stroke="#8b9cf6" stroke-width="1.8" d="M357,-228C357,-228 1313,-228 1313,-228 1319,-228 1325,-234 1325,-240 1325,-240 1325,-499 1325,-499 1325,-505 1319,-511 1313,-511 1313,-511 357,-511 357,-511 351,-511 345,-505 345,-499 345,-499 345,-240 345,-240 345,-234 351,-228 357,-228"/>
+<text text-anchor="middle" x="431.5" y="-489.4" font-family="Arial" font-size="22.00" fill="#4338ca">MES核心服务区</text>
+</g>
+<!-- n_AGG_01 -->
+<g id="node1" class="node">
+<title>n_AGG_01</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M506,-620C506,-620 387,-620 387,-620 381,-620 375,-614 375,-608 375,-608 375,-576 375,-576 375,-570 381,-564 387,-564 387,-564 506,-564 506,-564 512,-564 518,-570 518,-576 518,-576 518,-608 518,-608 518,-614 512,-620 506,-620"/>
+<text text-anchor="middle" x="446.5" y="-588.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">区域汇聚交换机 01</text>
+</g>
+<!-- n_CORE_SW_A -->
+<g id="node5" class="node">
+<title>n_CORE_SW_A</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M883.5,-314C883.5,-314 785.5,-314 785.5,-314 779.5,-314 773.5,-308 773.5,-302 773.5,-302 773.5,-270 773.5,-270 773.5,-264 779.5,-258 785.5,-258 785.5,-258 883.5,-258 883.5,-258 889.5,-258 895.5,-264 895.5,-270 895.5,-270 895.5,-302 895.5,-302 895.5,-308 889.5,-314 883.5,-314"/>
+<text text-anchor="middle" x="834.5" y="-282.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 A</text>
+</g>
+<!-- n_AGG_01&#45;&gt;n_CORE_SW_A -->
+<g id="edge5" class="edge">
+<title>n_AGG_01&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M518.04,-591C536.85,-591 552,-591 552,-591 552,-591 552,-300 552,-300 552,-300 764.7,-300 764.7,-300"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="764.7,-302.98 773.2,-300 764.7,-297.03 764.7,-302.98"/>
+<text text-anchor="middle" x="640.5" y="-587" font-family="Arial" font-size="10.00" fill="#475569">主干上联 A</text>
+</g>
+<!-- n_AGG_02 -->
+<g id="node2" class="node">
+<title>n_AGG_02</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M700,-674C700,-674 581,-674 581,-674 575,-674 569,-668 569,-662 569,-662 569,-630 569,-630 569,-624 575,-618 581,-618 581,-618 700,-618 700,-618 706,-618 712,-624 712,-630 712,-630 712,-662 712,-662 712,-668 706,-674 700,-674"/>
+<text text-anchor="middle" x="640.5" y="-642.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">区域汇聚交换机 02</text>
+</g>
+<!-- n_CORE_SW_B -->
+<g id="node6" class="node">
+<title>n_CORE_SW_B</title>
+<path fill="#eff6ff" stroke="#60a5fa" stroke-width="1.7" d="M1283,-449C1283,-449 1185,-449 1185,-449 1179,-449 1173,-443 1173,-437 1173,-437 1173,-405 1173,-405 1173,-399 1179,-393 1185,-393 1185,-393 1283,-393 1283,-393 1289,-393 1295,-399 1295,-405 1295,-405 1295,-437 1295,-437 1295,-443 1289,-449 1283,-449"/>
+<text text-anchor="middle" x="1234" y="-417.6" font-family="Arial" font-size="13.00" fill="#1d4ed8">核心交换机 B</text>
+</g>
+<!-- n_AGG_02&#45;&gt;n_CORE_SW_B -->
+<g id="edge6" class="edge">
+<title>n_AGG_02&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M712.21,-646C870.33,-646 1235,-646 1235,-646 1235,-646 1235,-457.54 1235,-457.54"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1237.98,-457.54 1235,-449.04 1232.03,-457.54 1237.98,-457.54"/>
+<text text-anchor="middle" x="834.5" y="-641" font-family="Arial" font-size="10.00" fill="#475569">主干上联 B</text>
+</g>
+<!-- n_WS_OPS -->
+<g id="node3" class="node">
+<title>n_WS_OPS</title>
+<path fill="#f8fafc" stroke="#94a3b8" stroke-width="1.7" d="M171,-597C171,-597 58,-597 58,-597 52,-597 46,-591 46,-585 46,-585 46,-553 46,-553 46,-547 52,-541 58,-541 58,-541 171,-541 171,-541 177,-541 183,-547 183,-553 183,-553 183,-585 183,-585 183,-591 177,-597 171,-597"/>
+<text text-anchor="middle" x="114.5" y="-565.6" font-family="Arial" font-size="13.00" fill="#334155">生产支撑工作站组</text>
+</g>
+<!-- n_WS_OPS&#45;&gt;n_AGG_01 -->
+<g id="edge7" class="edge">
+<title>n_WS_OPS&#45;&gt;n_AGG_01</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M183.29,-580.5C183.29,-580.5 366.43,-580.5 366.43,-580.5"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="366.43,-583.48 374.93,-580.5 366.43,-577.53 366.43,-583.48"/>
+<text text-anchor="middle" x="283" y="-623" font-family="Arial" font-size="10.00" fill="#475569">区域业务接入</text>
+</g>
+<!-- n_GW_PLC -->
+<g id="node4" class="node">
+<title>n_GW_PLC</title>
+<path fill="#fff7ed" stroke="#fdba74" stroke-width="1.7" d="M179,-732C179,-732 50,-732 50,-732 44,-732 38,-726 38,-720 38,-720 38,-688 38,-688 38,-682 44,-676 50,-676 50,-676 179,-676 179,-676 185,-676 191,-682 191,-688 191,-688 191,-720 191,-720 191,-726 185,-732 179,-732"/>
+<text text-anchor="middle" x="114.5" y="-707.6" font-family="Arial" font-size="13.00" fill="#c2410c">接口网关/控制接入设</text>
+<text text-anchor="middle" x="114.5" y="-693.6" font-family="Arial" font-size="13.00" fill="#c2410c">备</text>
+</g>
+<!-- n_GW_PLC&#45;&gt;n_AGG_02 -->
+<g id="edge8" class="edge">
+<title>n_GW_PLC&#45;&gt;n_AGG_02</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M189,-675.83C189,-661.47 189,-647 189,-647 189,-647 560.46,-647 560.46,-647"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="560.46,-649.98 568.96,-647 560.46,-644.03 560.46,-649.98"/>
+<text text-anchor="middle" x="283" y="-718" font-family="Arial" font-size="10.00" fill="#475569">现场接口接入</text>
+</g>
+<!-- n_MES_APP -->
+<g id="node7" class="node">
+<title>n_MES_APP</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M500,-449C500,-449 393,-449 393,-449 387,-449 381,-443 381,-437 381,-437 381,-405 381,-405 381,-399 387,-393 393,-393 393,-393 500,-393 500,-393 506,-393 512,-399 512,-405 512,-405 512,-437 512,-437 512,-443 506,-449 500,-449"/>
+<text text-anchor="middle" x="446.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 应用服务器</text>
+</g>
+<!-- n_GW_PLC&#45;&gt;n_MES_APP -->
+<g id="edge9" class="edge">
+<title>n_GW_PLC&#45;&gt;n_MES_APP</title>
+<path fill="none" stroke="#f59e0b" stroke-width="1.9" stroke-dasharray="5,2" d="M186,-675.83C186,-604.25 186,-421 186,-421 186,-421 372.26,-421 372.26,-421"/>
+<polygon fill="#f59e0b" stroke="#f59e0b" stroke-width="1.9" points="372.26,-423.98 380.76,-421 372.26,-418.03 372.26,-423.98"/>
+<text text-anchor="middle" x="283" y="-476" font-family="Arial" font-size="10.00" fill="#b45309">状态采集/数据交互</text>
+</g>
+<!-- n_CORE_SW_A&#45;&gt;n_CORE_SW_B -->
+<g id="edge1" class="edge">
+<title>n_CORE_SW_A&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M895.76,-286C1007.96,-286 1235,-286 1235,-286 1235,-286 1235,-384.2 1235,-384.2"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1232.03,-384.2 1235,-392.7 1237.98,-384.2 1232.03,-384.2"/>
+<text text-anchor="middle" x="986.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">核心冗余互联</text>
+</g>
+<!-- n_MES_APP&#45;&gt;n_CORE_SW_A -->
+<g id="edge2" class="edge">
+<title>n_MES_APP&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M512.21,-421C525.24,-421 535,-421 535,-421 535,-421 535,-286 535,-286 535,-286 764.67,-286 764.67,-286"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="764.67,-288.98 773.17,-286 764.67,-283.03 764.67,-288.98"/>
+<text text-anchor="middle" x="640.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">业务接入</text>
+</g>
+<!-- n_MES_DB -->
+<g id="node8" class="node">
+<title>n_MES_DB</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M894,-449C894,-449 775,-449 775,-449 769,-449 763,-443 763,-437 763,-437 763,-405 763,-405 763,-399 769,-393 775,-393 775,-393 894,-393 894,-393 900,-393 906,-399 906,-405 906,-405 906,-437 906,-437 906,-443 900,-449 894,-449"/>
+<text text-anchor="middle" x="834.5" y="-417.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 数据库服务器</text>
+</g>
+<!-- n_MES_DB&#45;&gt;n_CORE_SW_B -->
+<g id="edge3" class="edge">
+<title>n_MES_DB&#45;&gt;n_CORE_SW_B</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M906.38,-421C906.38,-421 1164.33,-421 1164.33,-421"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="1164.33,-423.98 1172.83,-421 1164.33,-418.03 1164.33,-423.98"/>
+<text text-anchor="middle" x="986.5" y="-435" font-family="Arial" font-size="10.00" fill="#475569">数据库接入</text>
+</g>
+<!-- n_MES_HIS -->
+<g id="node9" class="node">
+<title>n_MES_HIS</title>
+<path fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7" d="M506,-314C506,-314 387,-314 387,-314 381,-314 375,-308 375,-302 375,-302 375,-270 375,-270 375,-264 381,-258 387,-258 387,-258 506,-258 506,-258 512,-258 518,-264 518,-270 518,-270 518,-302 518,-302 518,-308 512,-314 506,-314"/>
+<text text-anchor="middle" x="446.5" y="-289.6" font-family="Arial" font-size="13.00" fill="#6d28d9">MES 历史数据服务</text>
+<text text-anchor="middle" x="446.5" y="-275.6" font-family="Arial" font-size="13.00" fill="#6d28d9">器</text>
+</g>
+<!-- n_MES_HIS&#45;&gt;n_CORE_SW_A -->
+<g id="edge4" class="edge">
+<title>n_MES_HIS&#45;&gt;n_CORE_SW_A</title>
+<path fill="none" stroke="#475569" stroke-width="1.9" d="M518.12,-272C518.12,-272 764.7,-272 764.7,-272"/>
+<polygon fill="#475569" stroke="#475569" stroke-width="1.9" points="764.7,-274.98 773.2,-272 764.7,-269.03 764.7,-274.98"/>
+<text text-anchor="middle" x="640.5" y="-340" font-family="Arial" font-size="10.00" fill="#475569">历史数据接入</text>
+</g>
+<!-- legend -->
+<g id="node10" class="node">
+<title>legend</title>
+<path fill="#ffffff" stroke="transparent" stroke-width="1.7" d="M1389,-198C1389,-198 1079,-198 1079,-198 1073,-198 1067,-192 1067,-186 1067,-186 1067,-12 1067,-12 1067,-6 1073,0 1079,0 1079,0 1389,0 1389,0 1395,0 1401,-6 1401,-12 1401,-12 1401,-186 1401,-186 1401,-192 1395,-198 1389,-198"/>
+<polygon fill="#f8fafc" stroke="transparent" points="1068,-169 1068,-197 1400,-197 1400,-169 1068,-169"/>
+<text text-anchor="start" x="1221" y="-180.6" font-family="Arial" font-weight="bold" font-size="13.00">图例</text>
+<polygon fill="#fff1f2" stroke="transparent" points="1068,-141 1068,-169 1191,-169 1191,-141 1068,-141"/>
+<text text-anchor="start" x="1103.5" y="-151.6" font-family="Arial" font-size="13.00">边界防护</text>
+<text text-anchor="start" x="1245" y="-151.6" font-family="Arial" font-size="13.00">防火墙 / 安全边界</text>
+<polygon fill="#eff6ff" stroke="transparent" points="1068,-113 1068,-141 1191,-141 1191,-113 1068,-113"/>
+<text text-anchor="start" x="1103.5" y="-123.6" font-family="Arial" font-size="13.00">交换网络</text>
+<text text-anchor="start" x="1226.5" y="-123.6" font-family="Arial" font-size="13.00">核心 / 汇聚 / 接入交换机</text>
+<polygon fill="#f5f3ff" stroke="transparent" points="1068,-85 1068,-113 1191,-113 1191,-85 1068,-85"/>
+<text text-anchor="start" x="1103.5" y="-95.6" font-family="Arial" font-size="13.00">平台服务</text>
+<text text-anchor="start" x="1226.5" y="-95.6" font-family="Arial" font-size="13.00">应用 / 数据 / 接口服务器</text>
+<polygon fill="#ecfdf5" stroke="transparent" points="1068,-57 1068,-85 1191,-85 1191,-57 1068,-57"/>
+<text text-anchor="start" x="1103.5" y="-67.6" font-family="Arial" font-size="13.00">运维审计</text>
+<text text-anchor="start" x="1245" y="-67.6" font-family="Arial" font-size="13.00">堡垒机 / 审计访问</text>
+<polygon fill="#fff7ed" stroke="transparent" points="1068,-29 1068,-57 1191,-57 1191,-29 1068,-29"/>
+<text text-anchor="start" x="1103.5" y="-39.6" font-family="Arial" font-size="13.00">接口设备</text>
+<text text-anchor="start" x="1251.5" y="-39.6" font-family="Arial" font-size="13.00">网关 / 协议接入</text>
+<text text-anchor="start" x="1075" y="-11.6" font-family="Arial" font-size="13.00">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</text>
+<polygon fill="none" stroke="#cbd5e1" points="1067,0 1067,-198 1401,-198 1401,0 1067,0"/>
+</g>
+<!-- n_MES_HIS&#45;&gt;legend -->
+</g>
+</svg>
+</div></section></section></main></div></body></html>

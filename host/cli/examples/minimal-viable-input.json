@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "最小可运行项目",
+    "customer": "示例客户",
+    "site": "示例站点",
+    "objective": "形成最小可运行的网络方案草案",
+    "scope": "覆盖基础现状、基础设计建议和待确认项",
+    "constraints": ["实施窗口待协调"]
+  },
+  "survey": {
+    "timeline": [],
+    "participants": [],
+    "sources": [],
+    "observations": [],
+    "findings": ["现网资料较有限"],
+    "concerns": ["详细部署条件待核实"]
+  },
+  "currentNetwork": {
+    "topology": "现网为基础工业交换网络。",
+    "layers": ["核心层", "接入层"],
+    "boundaries": ["办公与生产边界需进一步明确"],
+    "links": ["生产管理系统与控制对象存在访问关系"],
+    "resilience": "冗余策略待定"
+  },
+  "assets": {
+    "systems": ["生产管理系统", "PLC 控制系统"],
+    "devices": ["交换机", "PLC"],
+    "roles": ["生产管理", "控制执行"],
+    "locations": ["机房", "控制柜"],
+    "criticality": ["PLC 为关键控制对象"]
+  },
+  "communications": {
+    "flows": ["生产管理系统到 PLC 存在业务访问"],
+    "protocols": ["工业以太网"],
+    "accessPaths": ["办公到生产访问需受控"],
+    "remoteMaintenance": []
+  },
+  "addressing": {
+    "existingNetworks": [],
+    "reservedNetworks": ["预留后续扩展地址空间"],
+    "vlans": ["按边界划分 VLAN"],
+    "naming": ["统一命名"],
+    "constraints": []
+  },
+  "security": {
+    "objectives": ["明确边界", "最小权限访问"],
+    "zones": ["办公区", "控制区"],
+    "boundaryRequirements": ["办公与生产边界隔离"],
+    "accessControl": ["最小权限"],
+    "auditRequirements": []
+  },
+  "design": {
+    "principles": ["先清晰边界，再逐步优化结构"],
+    "targetArchitecture": "建议采用基础核心与接入分层结构，并逐步补强边界。",
+    "segmentation": "建议按办公区与控制区组织基础分区。",
+    "addressPlan": "建议以规划原则为主，待信息补足后细化。",
+    "deployment": "建议核心设备部署于机房，控制对象就近接入。",
+    "implementation": "建议先完成边界治理，再逐步细化结构与地址。"
+  },
+  "openItems": {
+    "missingInformation": ["详细地址与设备型号未完全掌握"],
+    "siteVerification": ["控制柜接入条件待现场复核"],
+    "customerConfirmation": ["访问粒度待客户确认"],
+    "designAssumptions": ["默认沿用既有基础布线条件"]
+  }
+}

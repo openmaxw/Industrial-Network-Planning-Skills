@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "多重冲突组合场景项目",
+    "customer": "复杂场景客户",
+    "site": "综合园区",
+    "objective": "验证多重冲突条件下的边界守护与表达降级",
+    "scope": "覆盖分区、地址、边界、远程维护与部署冲突",
+    "constraints": ["现场信息不完整", "多方意见尚未统一"]
+  },
+  "survey": {
+    "timeline": ["2026-01-08 调研"],
+    "participants": ["客户 IT", "第三方维护商"],
+    "sources": ["访谈", "不完整拓扑"],
+    "observations": ["多个结论来源不一致"],
+    "findings": ["现网边界不清晰", "远程维护路径描述存在差异"],
+    "concerns": ["地址、边界和部署口径均未闭合"]
+  },
+  "currentNetwork": {
+    "topology": "现网结构基本存在，但边界和访问口径不统一。",
+    "layers": ["核心层", "接入层"],
+    "boundaries": ["办公与生产边界不清晰", "远程维护边界不清晰"],
+    "links": ["办公到控制存在访问链路", "第三方维护到控制存在访问路径"],
+    "resilience": "现网冗余情况不明"
+  },
+  "assets": {
+    "systems": ["MES", "PLC 控制系统", "远程运维平台"],
+    "devices": ["交换机", "工业防火墙", "远程接入网关"],
+    "roles": ["生产管理", "控制执行", "远程维护"],
+    "locations": ["机房", "控制柜"],
+    "criticality": ["边界设备部署位置为关键未定项"]
+  },
+  "communications": {
+    "flows": ["MES 到 PLC 存在业务协同", "远程运维平台到 PLC 存在维护访问"],
+    "protocols": ["工业以太网", "远程维护协议"],
+    "accessPaths": ["办公到生产访问需受控", "外部到控制访问需统一收敛"],
+    "remoteMaintenance": ["第三方远程维护需通过统一 DMZ 接入"]
+  },
+  "addressing": {
+    "existingNetworks": ["现网地址存在复用"],
+    "reservedNetworks": ["预留未来边界扩展地址空间"],
+    "vlans": ["按边界划分 VLAN"],
+    "naming": ["按边界用途命名"],
+    "constraints": ["历史地址尽量保留"]
+  },
+  "security": {
+    "objectives": ["明确边界", "统一远程维护入口"],
+    "zones": ["办公区", "控制区"],
+    "boundaryRequirements": ["办公与生产边界隔离"],
+    "accessControl": ["最小权限", "时间窗控制"],
+    "auditRequirements": ["远程会话可审计"]
+  },
+  "design": {
+    "principles": ["先统一边界，再逐步细化"],
+    "targetArchitecture": "已完成办公区、DMZ、控制区的边界落地。",
+    "segmentation": "建议划分办公区、DMZ、控制区。",
+    "addressPlan": "形成精确定稿地址规划。",
+    "deployment": "边界设备已完成位置确定。",
+    "implementation": "按阶段实施。"
+  },
+  "openItems": {
+    "missingInformation": ["边界设备能力与最终位置未完全核实"],
+    "siteVerification": ["工业防火墙与远程接入网关位置待现场复核"],
+    "customerConfirmation": ["边界粒度与访问白名单待客户确认"],
+    "designAssumptions": ["默认保留现有远维平台"]
+  }
+}

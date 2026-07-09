@@ -1,0 +1,278 @@
+{
+  "project": {
+    "name": "示例项目名称",
+    "customer": "示例业主",
+    "site": "示例项目地点",
+    "objective": "形成可评审、可定版、可实施的工业网络方案，并在条件具备时输出施工级实数表。",
+    "scope": "覆盖核心区、汇聚区、接入区、边界区及运维区网络规划与实施组织。",
+    "constraints": [
+      "关键系统实施期间需保证业务连续性",
+      "现场变更需受控并具备回退条件"
+    ]
+  },
+  "survey": {
+    "observations": [
+      "现网存在历史分散建设情况"
+    ],
+    "findings": [
+      "关键对象边界与接口需单独核定"
+    ],
+    "concerns": [
+      "部分现网地址与设备部署条件尚未核实"
+    ]
+  },
+  "currentNetwork": {
+    "topology": "现网按中心承载、区域汇聚、对象接入方式组织",
+    "layers": [
+      "核心层",
+      "汇聚层",
+      "接入层"
+    ],
+    "links": [
+      "区域对象经汇聚后上联中心平台"
+    ]
+  },
+  "assets": {
+    "systems": [
+      "监控平台",
+      "业务接口系统",
+      "认证审计系统"
+    ],
+    "devices": [
+      "核心交换机",
+      "汇聚交换机",
+      "接入交换机",
+      "防火墙",
+      "运维接入网关"
+    ],
+    "roles": [
+      "监控",
+      "运维",
+      "业务接口"
+    ],
+    "locations": [
+      "中心机房",
+      "区域弱电间",
+      "边界收口位置"
+    ],
+    "criticality": [
+      "中心监控平台为关键对象"
+    ]
+  },
+  "communications": {
+    "flows": [
+      "现场对象向监控平台回传状态与告警",
+      "业务系统对监控平台存在受控查询访问",
+      "运维终端对监控平台与网关存在维护访问需求"
+    ],
+    "protocols": [
+      "工业以太网协议",
+      "业务查询协议",
+      "运维访问协议"
+    ],
+    "accessPaths": [
+      "业务访问应通过服务边界或DMZ收口",
+      "运维访问应通过统一入口受控接入"
+    ],
+    "remoteMaintenance": [
+      "远程访问需审批、审计和时间窗控制"
+    ]
+  },
+  "addressing": {
+    "existingNetworks": [
+      "既有网段需尽量平滑纳入"
+    ],
+    "reservedNetworks": [
+      "预留新增区域和运维边界地址空间"
+    ],
+    "vlans": [
+      "按区域、用途和边界划分 VLAN"
+    ],
+    "naming": [
+      "按区域、系统、用途统一命名"
+    ],
+    "constraints": [
+      "既有地址体系调整能力有限"
+    ],
+    "vlanTable": [
+      {
+        "zone": "核心区",
+        "vlan": "VLAN 100",
+        "purpose": "核心监控与管理"
+      }
+    ],
+    "subnetTable": [
+      {
+        "zone": "核心区",
+        "subnet": "10.100.0.0/24",
+        "gateway": "10.100.0.1"
+      }
+    ]
+  },
+  "security": {
+    "objectives": [
+      "边界清晰",
+      "访问最小化",
+      "运维可审计"
+    ],
+    "zones": [
+      "核心区",
+      "业务接口区",
+      "运维区",
+      "边界区"
+    ],
+    "boundaryRequirements": [
+      "跨域访问必须经边界控制点收口"
+    ],
+    "accessControl": [
+      "最小权限",
+      "白名单",
+      "审批与审计"
+    ],
+    "auditRequirements": [
+      "关键会话可追溯"
+    ]
+  },
+  "design": {
+    "principles": [
+      "先明确边界，再固化地址与实施安排"
+    ],
+    "targetArchitecture": "采用核心、汇聚、接入与边界分层组织总体架构。",
+    "segmentation": "按核心区、接入区、运维区和边界区组织网络分区。",
+    "addressPlan": "按区域与用途组织网段，为新增对象预留空间。",
+    "deployment": "核心资源集中部署，汇聚设备就近部署，边界设备独立部署。",
+    "implementation": "按复核、定版、实施、验收四步推进。"
+  },
+  "openItems": {
+    "missingInformation": [
+      "部分现场部署条件仍待复核"
+    ],
+    "siteVerification": [
+      "边界设备安装位置待现场复核"
+    ],
+    "customerConfirmation": [
+      "跨域访问边界与实施窗口待客户确认"
+    ],
+    "designAssumptions": [
+      "默认关键对象不与普通对象共用边界"
+    ]
+  },
+  "delivery": {
+    "accessMatrix": [
+      {
+        "id": "AC-01",
+        "scenario": "监控采集",
+        "source": "接入区",
+        "target": "核心区",
+        "service": "状态采集/告警上传",
+        "control": "仅允许单向采集，端口白名单放通"
+      }
+    ],
+    "vlanPlan": [
+      {
+        "id": "IP-01",
+        "zone": "核心区",
+        "vlan": "VLAN 100",
+        "subnet": "10.100.0.0/24",
+        "naming": "CORE-100",
+        "constraint": "核心地址池统一管理"
+      }
+    ],
+    "devicePlan": [
+      {
+        "id": "EQ-01",
+        "deviceType": "核心交换机/服务器",
+        "location": "中心机房",
+        "prerequisite": "机柜、电源、链路条件明确",
+        "requirement": "集中部署、统一监控、统一备份"
+      }
+    ],
+    "topologyZones": [
+      {
+        "id": "ZONE-CORE",
+        "title": "核心服务区",
+        "xHint": "center"
+      },
+      {
+        "id": "ZONE-DMZ",
+        "title": "接口服务边界区",
+        "xHint": "left"
+      },
+      {
+        "id": "ZONE-FIELD",
+        "title": "现场接入区",
+        "xHint": "right"
+      }
+    ],
+    "topologyNodes": [
+      {
+        "id": "CORE-SW-A",
+        "label": "核心交换机 A",
+        "zone": "ZONE-CORE",
+        "kind": "switch"
+      },
+      {
+        "id": "CORE-SW-B",
+        "label": "核心交换机 B",
+        "zone": "ZONE-CORE",
+        "kind": "switch"
+      },
+      {
+        "id": "MES-APP",
+        "label": "MES 应用服务器",
+        "zone": "ZONE-CORE",
+        "kind": "server"
+      },
+      {
+        "id": "DMZ-FW",
+        "label": "边界防火墙",
+        "zone": "ZONE-DMZ",
+        "kind": "firewall"
+      },
+      {
+        "id": "IF-SRV",
+        "label": "接口服务器",
+        "zone": "ZONE-DMZ",
+        "kind": "server"
+      },
+      {
+        "id": "AGG-01",
+        "label": "区域汇聚交换机 01",
+        "zone": "ZONE-FIELD",
+        "kind": "switch"
+      }
+    ],
+    "topologyLinks": [
+      {
+        "source": "CORE-SW-A",
+        "target": "CORE-SW-B",
+        "label": "堆叠/冗余互联",
+        "style": "solid"
+      },
+      {
+        "source": "DMZ-FW",
+        "target": "CORE-SW-A",
+        "label": "受控边界接入",
+        "style": "solid"
+      },
+      {
+        "source": "IF-SRV",
+        "target": "DMZ-FW",
+        "label": "接口服务转发",
+        "style": "solid"
+      },
+      {
+        "source": "AGG-01",
+        "target": "CORE-SW-B",
+        "label": "主干上联",
+        "style": "solid"
+      },
+      {
+        "source": "AGG-01",
+        "target": "MES-APP",
+        "label": "业务数据采集",
+        "style": "dashed"
+      }
+    ]
+  }
+}

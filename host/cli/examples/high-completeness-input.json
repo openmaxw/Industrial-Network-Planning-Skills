@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "高完整度示例项目",
+    "customer": "先进制造客户",
+    "site": "华南制造基地",
+    "objective": "完成分层分区优化、远程维护治理、地址规划和分阶段实施方案输出",
+    "scope": "覆盖厂级核心、车间汇聚、产线接入、DMZ、远程维护边界及关键控制对象",
+    "constraints": ["不能长时间停机", "保留部分历史网段", "分阶段割接"]
+  },
+  "survey": {
+    "timeline": ["2026-05-10 现场调研", "2026-05-18 远程复核"],
+    "participants": ["客户 IT", "自动化工程师", "运维负责人"],
+    "sources": ["现场访谈", "拓扑资料", "地址台账", "远维说明"],
+    "observations": ["办公与生产存在交叉访问", "远程维护入口较分散"],
+    "findings": ["MES、SCADA 与控制层之间存在多条跨域访问链路", "现网地址复用且车间之间边界不清晰"],
+    "concerns": ["停机窗口有限", "工业防火墙位置需复核"]
+  },
+  "currentNetwork": {
+    "topology": "现网采用厂级核心、车间汇聚与产线接入三级结构。",
+    "layers": ["厂级核心层", "车间汇聚层", "产线接入层"],
+    "boundaries": ["办公与生产边界不清晰", "远程维护入口缺少统一收口"],
+    "links": ["MES 到 SCADA 存在业务访问", "工程师站到 PLC 存在维护访问"],
+    "resilience": "关键链路具备局部冗余，但策略未统一"
+  },
+  "assets": {
+    "systems": ["MES", "SCADA", "PLC 控制系统", "远程运维平台"],
+    "devices": ["核心交换机", "汇聚交换机", "接入交换机", "工程师站", "PLC", "工业防火墙"],
+    "roles": ["生产管理", "控制执行", "运维管理"],
+    "locations": ["厂级机房", "车间弱电间", "控制柜"],
+    "criticality": ["PLC 为关键控制对象", "MES 为关键生产管理系统"]
+  },
+  "communications": {
+    "flows": ["MES 与 SCADA 存在业务协同流", "工程师站对 PLC 存在维护访问流"],
+    "protocols": ["工业以太网", "应用层业务协议", "远程维护协议"],
+    "accessPaths": ["办公到生产访问需受控", "运维到控制访问需收敛"],
+    "remoteMaintenance": ["第三方远程维护需通过 DMZ 受控接入"]
+  },
+  "addressing": {
+    "existingNetworks": ["现网地址存在复用", "部分车间保留历史网段"],
+    "reservedNetworks": ["预留未来新增产线地址空间", "预留独立运维区地址空间"],
+    "vlans": ["按厂级、车间级、产线级和安全边界组织 VLAN"],
+    "naming": ["按区域、系统、用途统一命名"],
+    "constraints": ["关键历史网段需保留"]
+  },
+  "security": {
+    "objectives": ["形成清晰生产边界", "收敛远程维护入口", "强化最小权限"],
+    "zones": ["办公区", "运维区", "DMZ", "控制区"],
+    "boundaryRequirements": ["办公与生产边界隔离", "远程维护经 DMZ 受控接入"],
+    "accessControl": ["最小权限", "白名单", "账号隔离", "时间窗控制"],
+    "auditRequirements": ["关键维护操作留痕", "远程会话可审计"]
+  },
+  "design": {
+    "principles": ["结构清晰", "边界明确", "可分阶段实施"],
+    "targetArchitecture": "建议保留三级结构，并在运维区、DMZ 与控制区之间设置受控边界。",
+    "segmentation": "建议划分办公区、运维区、DMZ 与控制区，并通过受控通道收敛跨域访问。",
+    "addressPlan": "建议按区域、安全边界与用途组织地址，并为后续扩展预留空间。",
+    "deployment": "核心设备集中部署于厂级机房，边界控制设备部署于关键收口位置。",
+    "implementation": "建议按边界治理、结构优化、地址规范化三阶段实施。"
+  },
+  "openItems": {
+    "missingInformation": ["工业防火墙最终位置待核实"],
+    "siteVerification": ["工业防火墙部署位置待现场复核"],
+    "customerConfirmation": ["冗余范围与审计粒度待客户确认"],
+    "designAssumptions": ["默认保留关键历史网段并逐步调整"]
+  }
+}

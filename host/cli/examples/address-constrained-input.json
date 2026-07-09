@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "地址受限继承场景项目",
+    "customer": "传统制造客户",
+    "site": "华中老厂区",
+    "objective": "在强历史继承约束下优化地址与边界组织",
+    "scope": "覆盖历史网段保留、地址规划边界和分阶段调整建议",
+    "constraints": ["大量历史网段必须保留", "不能大规模改址"]
+  },
+  "survey": {
+    "timeline": ["2026-03-12 调研"],
+    "participants": ["客户 IT", "自动化负责人"],
+    "sources": ["地址台账", "现网拓扑"],
+    "observations": ["多个区域共用历史网段"],
+    "findings": ["地址复用明显，边界随历史演进形成"],
+    "concerns": ["改址风险高"]
+  },
+  "currentNetwork": {
+    "topology": "现网结构较稳定，但地址组织较混乱。",
+    "layers": ["核心层", "汇聚层", "接入层"],
+    "boundaries": ["地址边界与安全边界不一致"],
+    "links": ["多个车间共用历史网段访问核心服务"],
+    "resilience": "结构稳定但地址维护成本高"
+  },
+  "assets": {
+    "systems": ["MES", "SCADA", "PLC 控制系统"],
+    "devices": ["交换机", "PLC"],
+    "roles": ["生产管理", "控制执行"],
+    "locations": ["机房", "车间弱电间"],
+    "criticality": ["历史地址继承为关键约束"]
+  },
+  "communications": {
+    "flows": ["MES 到多个车间系统存在业务访问流"],
+    "protocols": ["工业以太网"],
+    "accessPaths": ["跨区域访问需结合现网继承约束收敛"],
+    "remoteMaintenance": []
+  },
+  "addressing": {
+    "existingNetworks": ["现网地址存在复用", "多个区域沿用同一历史网段"],
+    "reservedNetworks": ["仅能有限预留新增地址空间"],
+    "vlans": ["建议按边界逐步拆分 VLAN"],
+    "naming": ["按区域和用途重构命名"],
+    "constraints": ["不能一次性整体改址", "关键系统地址需尽量保留"]
+  },
+  "security": {
+    "objectives": ["先明确边界，再逐步优化地址组织"],
+    "zones": ["办公区", "控制区"],
+    "boundaryRequirements": ["办公与生产边界隔离"],
+    "accessControl": ["最小权限"],
+    "auditRequirements": []
+  },
+  "design": {
+    "principles": ["优先继承关键地址，再逐步规范化"],
+    "targetArchitecture": "建议保持现有结构稳定，优先治理边界与地址命名。",
+    "segmentation": "建议先按边界划分基础区域，再逐步推动地址整理。",
+    "addressPlan": "建议以分阶段、分区域方式逐步优化地址组织。",
+    "deployment": "建议维持现有部署并在关键边界补强控制。",
+    "implementation": "建议先梳理历史地址继承关系，再逐步推进边界与地址优化。"
+  },
+  "openItems": {
+    "missingInformation": ["部分历史网段用途未完全厘清"],
+    "siteVerification": ["部分关键控制网段归属待现场复核"],
+    "customerConfirmation": ["改址容忍度待客户确认"],
+    "designAssumptions": ["默认关键系统地址保持不变"]
+  }
+}

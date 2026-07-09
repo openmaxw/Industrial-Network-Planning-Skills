@@ -1,0 +1,127 @@
+{
+  "methodologyKey": "isa95-iec62443-combined-demo",
+  "exportedAt": "2026-07-08T10:30:00.000Z",
+  "formData": {
+    "overview.projectName": "某新能源工厂工业网络升级项目",
+    "overview.customerName": "某新能源制造企业",
+    "overview.siteName": "华东生产基地一期",
+    "overview.projectGoal": "完成生产网络分层分区优化、远程运维边界梳理与地址规划建议。",
+    "isa95-design-positioning": "建议采用厂级核心、车间汇聚、产线接入三级结构。",
+    "isa95-design-basis": "基于层级结构、业务协同和对象归属整理形成设计主线。",
+    "security.designPrinciple": "按区域、通道、边界和访问关系逐步收敛安全暴露面。",
+    "security.remoteControl": "统一经 DMZ、堡垒机与受控维护链路接入控制区。",
+    "security.measure": "执行白名单、双因素认证、时间窗控制和日志审计。"
+  },
+  "recordCollections": {
+    "enterprise-basic": [
+      {
+        "enterprise.name": "某新能源制造企业",
+        "enterprise.scope": "华东生产基地一期工业网络升级",
+        "enterprise.level": "集团-基地-车间",
+        "enterprise.goal": "形成清晰层级、边界和可实施的工业网络方案"
+      }
+    ],
+    "site-structure": [
+      {
+        "site.nodeName": "厂级核心",
+        "site.nodeType": "厂级",
+        "site.parentNode": "华东生产基地一期",
+        "site.responsibility": "厂级网络与系统汇聚"
+      },
+      {
+        "site.nodeName": "车间汇聚",
+        "site.nodeType": "车间级",
+        "site.parentNode": "厂级核心",
+        "site.responsibility": "车间网络汇聚与边界承接"
+      }
+    ],
+    "business-process": [
+      {
+        "process.name": "MES 到产线协同",
+        "process.owner": "制造执行团队",
+        "process.zoneRef": "控制区",
+        "process.input": "生产指令",
+        "process.output": "执行状态与产量信息"
+      }
+    ],
+    "asset-allocation": [
+      {
+        "asset.name": "MES 服务器",
+        "asset.siteRef": "厂级核心",
+        "asset.role": "生产管理系统",
+        "asset.interface": "业务访问接口"
+      },
+      {
+        "asset.name": "工程师站",
+        "asset.siteRef": "车间汇聚",
+        "asset.role": "维护终端",
+        "asset.interface": "维护访问接口"
+      }
+    ],
+    "isa95-design": [
+      {
+        "isa95.designPrinciple": "按层级、角色和协同路径组织网络结构。",
+        "isa95.integrationPath": "MES 经受控路径与车间控制系统协同。",
+        "isa95.boundary": "厂级与车间级之间形成清晰结构边界。",
+        "derive.iterationFlag": "是",
+        "derive.iterationNote": "后续应补充跨车间协同场景的经验模板。",
+        "derive.candidateSuggestion": "沉淀制造执行与控制协同的标准设计骨架。"
+      }
+    ],
+    "zone-identification": [
+      {
+        "zone.name": "办公区",
+        "zone.role": "办公与通用 IT 访问",
+        "zone.boundary": "与生产区受控隔离"
+      },
+      {
+        "zone.name": "控制区",
+        "zone.role": "PLC、SCADA 与工程师站运行区域",
+        "zone.boundary": "仅允许经受控路径访问"
+      }
+    ],
+    "conduit-design": [
+      {
+        "conduit.name": "运维区到控制区受控通道",
+        "conduit.sourceZone": "运维区",
+        "conduit.targetZone": "控制区",
+        "conduit.protection": "审批、双因素、审计、时间窗控制"
+      }
+    ],
+    "threat-analysis": [
+      {
+        "threat.source": "第三方远程维护",
+        "threat.surface": "VPN 与跳板机",
+        "threat.targetZone": "控制区",
+        "threat.impact": "越权访问与错误配置"
+      }
+    ],
+    "risk-evaluation": [
+      {
+        "risk.level": "高",
+        "risk.priority": "P1",
+        "risk.target": "远程维护入口",
+        "risk.note": "需强化访问审批、白名单和会话留痕。"
+      }
+    ],
+    "security-design": [
+      {
+        "security.designPrinciple": "按区域、通道、边界和访问关系逐步收敛安全暴露面。",
+        "security.remoteControl": "统一经 DMZ、堡垒机与受控维护链路接入控制区。",
+        "security.measure": "执行白名单、双因素认证、时间窗控制和日志审计。",
+        "derive.iterationFlag": "是",
+        "derive.iterationNote": "IEC62443 项目应优先明确区域职责、通道边界和维护路径收口位置。",
+        "derive.candidateSuggestion": "补充远程运维与受控维护双路径治理经验模板。"
+      }
+    ],
+    "special-judgements": [
+      {
+        "iteration.name": "远程维护边界先行治理",
+        "iteration.sourcePage": "security-design",
+        "iteration.reason": "当前远程入口风险高于内部结构优化优先级。",
+        "iteration.action": "建议先完成 DMZ 与远维受控路径治理。",
+        "iteration.reuse": "可复用"
+      }
+    ]
+  }
+}

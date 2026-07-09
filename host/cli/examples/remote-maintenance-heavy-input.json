@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "远程运维主导场景项目",
+    "customer": "多厂区制造客户",
+    "site": "华北工厂",
+    "objective": "梳理远程维护边界并规范跨域访问路径",
+    "scope": "覆盖远程运维平台、DMZ、控制区及第三方访问路径",
+    "constraints": ["第三方远程维护需求强", "维护时间窗口分散"]
+  },
+  "survey": {
+    "timeline": ["2026-04-05 调研"],
+    "participants": ["客户 IT", "维护服务商"],
+    "sources": ["远维台账", "网络拓扑"],
+    "observations": ["远程维护入口较多"],
+    "findings": ["第三方维护访问路径未统一收口"],
+    "concerns": ["账号与访问粒度控制不足"]
+  },
+  "currentNetwork": {
+    "topology": "现网具备基础核心与接入结构，远程维护路径多点接入。",
+    "layers": ["核心层", "接入层"],
+    "boundaries": ["远程维护边界不清晰"],
+    "links": ["远程维护平台到控制设备存在多条访问路径"],
+    "resilience": "维护链路无统一策略"
+  },
+  "assets": {
+    "systems": ["远程运维平台", "PLC 控制系统"],
+    "devices": ["交换机", "工业防火墙", "远程接入网关"],
+    "roles": ["远程维护", "控制执行"],
+    "locations": ["机房", "控制柜"],
+    "criticality": ["远程维护边界控制为关键对象"]
+  },
+  "communications": {
+    "flows": ["远程运维平台到 PLC 存在维护访问流"],
+    "protocols": ["远程维护协议"],
+    "accessPaths": ["外部到控制访问需统一收敛"],
+    "remoteMaintenance": ["第三方远程维护需通过统一 DMZ 受控接入"]
+  },
+  "addressing": {
+    "existingNetworks": ["远维相关地址分散"],
+    "reservedNetworks": ["预留 DMZ 地址空间"],
+    "vlans": ["按远维边界与控制边界划分 VLAN"],
+    "naming": ["按访问域命名"],
+    "constraints": []
+  },
+  "security": {
+    "objectives": ["统一远程维护入口", "实现最小权限控制"],
+    "zones": ["运维区", "DMZ", "控制区"],
+    "boundaryRequirements": ["远程维护经 DMZ 受控接入"],
+    "accessControl": ["最小权限", "账号隔离", "时间窗控制"],
+    "auditRequirements": ["远程会话可审计"]
+  },
+  "design": {
+    "principles": ["先统一收口，再细化控制"],
+    "targetArchitecture": "建议建立统一 DMZ 与受控远程维护入口。",
+    "segmentation": "建议划分运维区、DMZ、控制区。",
+    "addressPlan": "建议单独规划远维与 DMZ 地址空间。",
+    "deployment": "建议在关键边界部署工业防火墙与远程接入控制设备。",
+    "implementation": "建议先统一远程维护入口，再推进权限与审计治理。"
+  },
+  "openItems": {
+    "missingInformation": ["第三方账号台账未完全整理"],
+    "siteVerification": ["远程接入网关位置待现场复核"],
+    "customerConfirmation": ["维护时间窗策略待客户确认"],
+    "designAssumptions": ["默认现有远维平台继续保留"]
+  }
+}
