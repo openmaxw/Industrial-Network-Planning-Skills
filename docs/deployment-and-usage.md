@@ -1,137 +1,65 @@
-# Industrial-Network-Planning-Skills 部署与使用说明
+# 部署与使用说明
 
-## 1. 目标
+## 1. 项目定位
 
-本说明用于解释新独立仓库如何被使用，而不依赖原有工业网络规划框架页面系统。
+本项目是一个独立的工业网络规划方案生成器，输入为标准化项目资料，输出为正式 HTML 方案。
 
-## 2. 当前仓库结构
+其目标不是承接某个旧系统的导出结果，而是围绕真实项目调研、设计分析和正式交付形成稳定的方法与工具链。
 
-当前仓库已按三层组织：
+## 2. 目录说明
 
-- `core/`：独立 skill 核心
-- `adapters/`：不同来源系统适配资料
-- `docs/`：架构、迁移与使用说明
-- `output/`：输出目录，当前建议优先输出 HTML 交付预览
+- `core/`：方法体系、规则、输入合同、文档装配规则与参考资料
+- `host/cli/`：命令行宿主与生成实现
+- `output/`：本地生成的 HTML 结果
+- `docs/`：项目说明、架构说明与使用文档
 
-## 3. 最小使用方式
+## 3. 输入要求
 
-第一版建议采用最简单的使用方式：
+输入必须是标准输入包，并直接描述当前项目本身的信息。
 
-1. 准备一个标准输入包
-2. 基于 `core/` 中的方法与模板生成客户方案
-3. 输出 HTML 文档到 `output/`
+重点字段包括：
 
-## 4. 如何准备输入
+- 项目目标、范围界定、业务流程
+- 设备归属、安全需求、安全场景与后果分析
+- 暴露面、基线检查、安全约束与关键对象
+- 环境条件、实施约束、设计原则与架构划分
+- 技术选择、网络设计、工程设计、对象接入、设备选型、部署设计、连接关系
+- 网络拓扑、分层设计、性能设计、稳定性设计、冗余设计、地址分段、时延分析
 
-### 方式一：手工准备标准输入包
+## 4. 生成方式
 
-直接参照：
+正式 HTML 生成命令：
 
-- `core/references/portable-input-package-spec.md`
-- `core/examples/standard-input-example.json`
+```bash
+PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
+  --input host/cli/examples/dayawan-unit1-mes-input.json \
+  --format html --style formal \
+  --output output/dayawan-detailed.html
+```
 
-手工整理项目输入，生成标准输入 JSON。
+标准样例生成命令：
 
-### 方式二：通过 adapter 生成标准输入包
+```bash
+PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
+  --input core/examples/standard-input-example.json \
+  --format html --style formal \
+  --output output/standard-detailed.html
+```
 
-例如当前系统：
+## 5. 输出特征
 
-- `adapters/current-industrial-network-planning-framework/runtime-to-standard-input-spec.md`
-- `adapters/current-industrial-network-planning-framework/runtime-export-example.json`
+正式 HTML 应满足以下要求：
 
-先从来源系统导出数据，再按 adapter 规范转换为标准输入包。
+- 以真实项目方案正文口吻输出
+- 先呈现业务与现场，再展开设计与实施
+- 同时保留关键事实、设计依据、设计响应与必要待确认事项
+- 拓扑图使用 Graphviz 生成；如本地未安装，则在 HTML 中提示安装信息
 
-## 5. 如何组织 skill 运行
+## 6. 当前交付口径
 
-在没有实现代码的阶段，当前仓库中的运行逻辑应理解为：
+当前项目文档与输出已统一按“全新项目”维护：
 
-- 按 `core/SKILL.md` 规定读取核心规则
-- 使用 `core/references/` 中的方法与装配规则
-- 以 `core/templates/customer-solution-template.md` 作为输出骨架
-- 生成客户方案 Markdown
-
-## 6. 当前阶段推荐的运行形态
-
-最推荐的第一宿主是 CLI。
-
-原因：
-
-- 最轻量
-- 不依赖先做 Web 前端
-- 最适合验证标准输入包与核心输出是否合理
-
-## 7. CLI MVP 建议行为
-
-未来若进入实现阶段，CLI 第一版建议提供以下能力：
-
-- 指定输入文件
-- 指定输出文件
-- 读取标准输入 JSON
-- 调用核心规则生成 Markdown 方案
-- 在生成前进行输入完整性检查
-- 在输出中保留待确认项和假设项
-
-## 8. 输出建议
-
-第一版输出建议统一为 Markdown：
-
-- 易于版本管理
-- 易于人工审阅
-- 易于后续转换为 HTML / Word / PDF
-
-输出目录建议为：
-
-- `output/`（如 `output/dayawan-detailed.html`）
-
-## 正式 HTML 的表达原则
-
-当前正式 HTML 输出不应只保留收敛结论，而应尽量保留规划逻辑链条。核心章节建议按以下层次组织：
-
-1. 本章结论摘要
-2. 基础事实记录
-3. 关键设计约束
-4. 结构化表格 / 图示
-5. 设计响应
-6. 待确认项
-
-其中：
-
-- “基础事实记录”用于保留业务描述、调研记录、环境条件、地址继承条件等原始素材
-- “关键设计约束”用于说明这些原始输入如何转化为规划边界
-- “设计响应”用于说明网络架构、冗余、性能、地址、部署等设计如何回应这些约束
-
-## 9. 当前系统的定位
-
-当前工业网络规划框架不再被定义为 skill 的唯一宿主，而是：
-
-- 一个已知来源系统
-- 一个首个 adapter 样例
-
-这意味着：
-
-- skill 可以脱离它使用
-- 但也可以继续通过 adapter 接入它
-
-## 10. 推荐使用路径
-
-### 路径 A：完全脱离当前系统
-
-- 手工或通过其他来源准备标准输入包
-- 用独立 skill 生成客户方案
-
-### 路径 B：当前系统作为来源
-
-- 在当前系统完成采集与推演
-- 导出运行时数据
-- 经 adapter 转换为标准输入包
-- 用独立 skill 生成客户方案
-
-## 11. 当前阶段结论
-
-当前仓库已经具备：
-
-- 核心 skill 资产
-- 当前系统 adapter 样例
-- 独立化迁移与系统骨架说明
-
-下一步若要真正运行，只需补一层宿主实现（优先 CLI）。
+- 不强调来源系统、历史迁移或导出链路
+- 不使用内部系统中间态措辞
+- 不把方案写成模板拼装说明
+- 重点突出项目事实、规划逻辑与正式交付表达
