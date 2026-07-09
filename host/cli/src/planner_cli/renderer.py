@@ -558,7 +558,7 @@ def _render_formal_chapter(lines: list[str], plan: PlanBundle, chapter: Chapter)
         _append_evidence_list(lines, chapter.recommendations, "当前未补充相关内容。", show_source=False, limit=limit)
 
     if chapter.pending_items:
-        lines.append("**待确认项**")
+        lines.append("**待确认事项**")
         lines.append("")
         _append_evidence_list(lines, chapter.pending_items, "当前无新增待确认项。", show_source=False, limit=3)
 
@@ -603,7 +603,7 @@ def _render_draft_chapter(lines: list[str], chapter: Chapter) -> None:
     lines.append("**假设项**")
     lines.append("")
     _append_evidence_list(lines, chapter.assumptions, "本章暂无新增假设项。", limit=3)
-    lines.append("**待确认项**")
+    lines.append("**待确认事项**")
     lines.append("")
     _append_evidence_list(lines, chapter.pending_items, "本章暂无新增待确认项。", limit=3)
 

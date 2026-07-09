@@ -25,7 +25,7 @@ def _render_bullets(block: BulletBlock) -> str:
         klass = 'block constraint-block'
     elif block.title in {'设计响应', '架构响应', '边界响应', '拓扑响应', '冗余响应', '性能与时延响应', '地址分段响应', '设备与部署响应', '通信与运维响应'}:
         klass = 'block response-block'
-    elif block.title == '待确认项':
+    elif block.title == '待确认事项':
         klass = 'block pending-block'
     return f'<section class="{klass}"><h4>{_esc(block.title)}</h4><ul>{items}</ul></section>'
 
