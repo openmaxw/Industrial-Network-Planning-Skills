@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import math
 import re
+import subprocess
+import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 from planner_cli.document_model import DiagramBlock
+from planner_cli.graphviz_support import has_graphviz
 
 WIDTH = 2200
 HEIGHT = 1400
@@ -151,6 +154,15 @@ def _draw_footer(draw, meta_font):
 
 
 def render_diagram_png(diagram: DiagramBlock, output_path: Path) -> Path:
+    if diagram.source_format == 'graphviz':
+        if not has_graphviz():
+            raise RuntimeError('missing graphviz')
+        with tempfile.TemporaryDirectory(prefix='planner-dot-png-') as tmpdir:
+            dot_path = Path(tmpdir) / 'graph.dot'
+            dot_path.write_text(diagram.content, encoding='utf-8')
+            subprocess.run(['dot', '-Tpng', str(dot_path), '-o', str(output_path)], check=True, capture_output=True)
+            return output_path
+
     groups, ungrouped, edges = _parse_mermaid(diagram)
     image = Image.new('RGB', (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(image)

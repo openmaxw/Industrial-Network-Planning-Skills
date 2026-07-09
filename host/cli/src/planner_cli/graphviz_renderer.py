@@ -101,62 +101,76 @@ def _node_style(node_id: str, label: str) -> tuple[str, str, str]:
     return '#ffffff', '#94a3b8', '#1f2937'
 
 
+def build_diagram_dot(diagram: DiagramBlock) -> tuple[str, str | None]:
+    if diagram.source_format == 'graphviz':
+        return diagram.content, None
+    if diagram.source_format != 'mermaid':
+        return '', f'unsupported:{diagram.source_format}'
+
+    try:
+        groups, ungrouped, edges = _parse_mermaid(diagram)
+        lines = [
+            'digraph G {',
+            'graph [rankdir=LR, bgcolor="white", splines=ortho, nodesep=1.1, ranksep=1.4, pad=0.55, margin=0.25, fontname="Arial", labelloc="t", labeljust="l"];',
+            'node [shape=box, style="rounded,filled", fillcolor="#ffffff", color="#94a3b8", penwidth=1.7, fontname="Arial", fontsize=13, margin="0.24,0.16"];',
+            'edge [color="#475569", penwidth=1.9, arrowsize=0.85, fontname="Arial", fontsize=10, labelfontsize=10, labeldistance=2.0, labelangle=20];',
+            f'label="{_dot_label(diagram.title)}";',
+            'fontsize=22;',
+            'fontcolor="#0f172a";',
+            'compound=true;',
+            'newrank=true;',
+        ]
+
+        for group in groups:
+            fill, border, font = _cluster_style(group['id'], group['title'])
+            lines.append(f'subgraph cluster_{_dot_id(group["id"])} {{')
+            lines.append(f'label="{_dot_label(group["title"])}"; color="{border}"; fontcolor="{font}"; pencolor="{border}"; penwidth=1.8; style="rounded,filled"; fillcolor="{fill}"; margin=30; labeljust="l";')
+            for node_id, label in group['nodes']:
+                node_fill, node_border, node_font = _node_style(node_id, label)
+                lines.append(f'"{_dot_id(node_id)}" [label="{_dot_label(_wrap_label(label, 10))}", width=1.7, height=0.78, fillcolor="{node_fill}", color="{node_border}", fontcolor="{node_font}"];')
+            lines.append('}')
+
+        for node_id, label in ungrouped:
+            node_fill, node_border, node_font = _node_style(node_id, label)
+            lines.append(f'"{_dot_id(node_id)}" [label="{_dot_label(_wrap_label(label, 10))}", width=1.7, height=0.78, fillcolor="{node_fill}", color="{node_border}", fontcolor="{node_font}"];')
+
+        lines.append('legend [shape=plain, margin=0, label=<')
+        lines.append('<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#cbd5e1">')
+        lines.append('<TR><TD COLSPAN="2" BGCOLOR="#f8fafc"><B>图例</B></TD></TR>')
+        lines.append('<TR><TD BGCOLOR="#fff1f2">边界防护</TD><TD>防火墙 / 安全边界</TD></TR>')
+        lines.append('<TR><TD BGCOLOR="#eff6ff">交换网络</TD><TD>核心 / 汇聚 / 接入交换机</TD></TR>')
+        lines.append('<TR><TD BGCOLOR="#f5f3ff">平台服务</TD><TD>应用 / 数据 / 接口服务器</TD></TR>')
+        lines.append('<TR><TD BGCOLOR="#ecfdf5">运维审计</TD><TD>堡垒机 / 审计访问</TD></TR>')
+        lines.append('<TR><TD BGCOLOR="#fff7ed">接口设备</TD><TD>网关 / 协议接入</TD></TR>')
+        lines.append('<TR><TD COLSPAN="2" ALIGN="LEFT">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</TD></TR>')
+        lines.append('</TABLE>>];')
+
+        for sid, tid, label, dashed in edges:
+            attrs = []
+            if label:
+                attrs.append(f'label="{_dot_label(label)}"')
+            if dashed:
+                attrs.extend(['style="dashed"', 'color="#f59e0b"', 'fontcolor="#b45309"'])
+            else:
+                attrs.extend(['color="#475569"', 'fontcolor="#475569"'])
+            attr_text = ' [' + ', '.join(attrs) + ']' if attrs else ''
+            lines.append(f'"{_dot_id(sid)}" -> "{_dot_id(tid)}"{attr_text};')
+
+        if groups and groups[-1]['nodes']:
+            lines.append(f'"{_dot_id(groups[-1]["nodes"][-1][0])}" -> legend [style="invis", weight=0, minlen=2];')
+
+        lines.append('}')
+        return '\n'.join(lines), None
+    except Exception as exc:
+        return '', f'error:{exc}'
+
+
 def render_diagram_svg_graphviz(diagram: DiagramBlock) -> str:
     if not has_graphviz():
         return ''
-    groups, ungrouped, edges = _parse_mermaid(diagram)
-    lines = [
-        'digraph G {',
-        'graph [rankdir=LR, bgcolor="white", splines=ortho, nodesep=1.1, ranksep=1.4, pad=0.55, margin=0.25, fontname="Arial", labelloc="t", labeljust="l"];',
-        'node [shape=box, style="rounded,filled", fillcolor="#ffffff", color="#94a3b8", penwidth=1.7, fontname="Arial", fontsize=13, margin="0.24,0.16"];',
-        'edge [color="#475569", penwidth=1.9, arrowsize=0.85, fontname="Arial", fontsize=10, labelfontsize=10, labeldistance=2.0, labelangle=20];',
-        f'label="{_dot_label(diagram.title)}";',
-        'fontsize=22;',
-        'fontcolor="#0f172a";',
-        'compound=true;',
-        'newrank=true;',
-    ]
-
-    for group in groups:
-        fill, border, font = _cluster_style(group['id'], group['title'])
-        lines.append(f'subgraph cluster_{_dot_id(group["id"])} {{')
-        lines.append(f'label="{_dot_label(group["title"])}"; color="{border}"; fontcolor="{font}"; pencolor="{border}"; penwidth=1.8; style="rounded,filled"; fillcolor="{fill}"; margin=30; labeljust="l";')
-        for node_id, label in group['nodes']:
-            node_fill, node_border, node_font = _node_style(node_id, label)
-            lines.append(f'"{_dot_id(node_id)}" [label="{_dot_label(_wrap_label(label, 10))}", width=1.7, height=0.78, fillcolor="{node_fill}", color="{node_border}", fontcolor="{node_font}"];')
-        lines.append('}')
-
-    for node_id, label in ungrouped:
-        node_fill, node_border, node_font = _node_style(node_id, label)
-        lines.append(f'"{_dot_id(node_id)}" [label="{_dot_label(_wrap_label(label, 10))}", width=1.7, height=0.78, fillcolor="{node_fill}", color="{node_border}", fontcolor="{node_font}"];')
-
-    lines.append('legend [shape=plain, margin=0, label=<')
-    lines.append('<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#cbd5e1">')
-    lines.append('<TR><TD COLSPAN="2" BGCOLOR="#f8fafc"><B>图例</B></TD></TR>')
-    lines.append('<TR><TD BGCOLOR="#fff1f2">边界防护</TD><TD>防火墙 / 安全边界</TD></TR>')
-    lines.append('<TR><TD BGCOLOR="#eff6ff">交换网络</TD><TD>核心 / 汇聚 / 接入交换机</TD></TR>')
-    lines.append('<TR><TD BGCOLOR="#f5f3ff">平台服务</TD><TD>应用 / 数据 / 接口服务器</TD></TR>')
-    lines.append('<TR><TD BGCOLOR="#ecfdf5">运维审计</TD><TD>堡垒机 / 审计访问</TD></TR>')
-    lines.append('<TR><TD BGCOLOR="#fff7ed">接口设备</TD><TD>网关 / 协议接入</TD></TR>')
-    lines.append('<TR><TD COLSPAN="2" ALIGN="LEFT">实线：主业务/主干链路；虚线：受控访问/运维/数据交互</TD></TR>')
-    lines.append('</TABLE>>];')
-
-    for sid, tid, label, dashed in edges:
-        attr = []
-        if label:
-            attr.append(f'label="{_dot_label(label)}"')
-        if dashed:
-            attr.extend(['style="dashed"', 'color="#f59e0b"', 'fontcolor="#b45309"'])
-        else:
-            attr.extend(['color="#475569"', 'fontcolor="#475569"'])
-        attrs = ' [' + ', '.join(attr) + ']' if attr else ''
-        lines.append(f'"{_dot_id(sid)}" -> "{_dot_id(tid)}"{attrs};')
-
-    if groups and groups[-1]['nodes']:
-        lines.append(f'"{_dot_id(groups[-1]["nodes"][-1][0])}" -> legend [style="invis", weight=0, minlen=2];')
-
-    lines.append('}')
-    dot = '\n'.join(lines)
+    dot, error = build_diagram_dot(diagram)
+    if error:
+        raise RuntimeError(error)
     with tempfile.TemporaryDirectory(prefix='planner-dot-') as tmpdir:
         dot_path = Path(tmpdir) / 'graph.dot'
         svg_path = Path(tmpdir) / 'graph.svg'

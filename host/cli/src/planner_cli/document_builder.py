@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from planner_cli.document_model import Appendix, BulletBlock, DiagramBlock, DocumentMeta, DocumentModel, ParagraphBlock, Section, TableBlock
+from planner_cli.graphviz_renderer import build_diagram_dot
 from planner_cli.planner import PlanBundle
 from planner_cli.renderer import FORMAL_TITLE_MAP, HIDE_FORMAL_TITLES, _build_boundary_topology_mermaid, _build_formal_tables, _build_topology_mermaid, _formal_ordered_chapters, _formalize_result_text
 
@@ -25,6 +26,13 @@ RESULT_TITLES = {
 def _items(items, limit=None):
     values = items[:limit] if limit is not None else items
     return [_formalize_result_text(item.text) for item in values]
+
+
+def _to_graphviz_diagram(title: str, diagram_type: str, mermaid_content: str) -> DiagramBlock:
+    dot, error = build_diagram_dot(DiagramBlock(title=title, diagram_type=diagram_type, source_format='mermaid', content=mermaid_content))
+    content = dot if not error and dot else mermaid_content
+    source_format = 'graphviz' if not error and dot else 'mermaid'
+    return DiagramBlock(title=title, diagram_type=diagram_type, source_format=source_format, content=content)
 
 
 def _build_focus_diagrams(plan: PlanBundle) -> list[DiagramBlock]:
@@ -66,7 +74,7 @@ def _build_focus_diagrams(plan: PlanBundle) -> list[DiagramBlock]:
             connector = '-."' + label.replace('"', '') + '".-' if style == 'dashed' and label else ('-->|"' + label.replace('"', '') + '"|' if label else '-->')
             lines.append(f'    {source} {connector} {target}' if connector != '-->' else f'    {source} --> {target}')
         lines.append('```')
-        return DiagramBlock(title=title, diagram_type=title, source_format='mermaid', content='\n'.join(lines))
+        return _to_graphviz_diagram(title, title, '\n'.join(lines))
 
     return [
         make_diagram('核心区设备拓扑图', ['ZONE-CORE']),
@@ -86,8 +94,8 @@ def build_document_model(plan: PlanBundle, style: str = 'formal') -> DocumentMod
             continue
         section = Section(title=FORMAL_TITLE_MAP.get(chapter.title, chapter.title))
         if chapter.title == '网络拓扑与通信路径说明':
-            overall = DiagramBlock(title='总体拓扑图', diagram_type='overall-topology', source_format='mermaid', content=_build_topology_mermaid(plan))
-            boundary = DiagramBlock(title='重点边界拓扑图', diagram_type='boundary-topology', source_format='mermaid', content=_build_boundary_topology_mermaid(plan))
+            overall = _to_graphviz_diagram('总体拓扑图', 'overall-topology', _build_topology_mermaid(plan))
+            boundary = _to_graphviz_diagram('重点边界拓扑图', 'boundary-topology', _build_boundary_topology_mermaid(plan))
             section.diagrams.extend([overall, boundary])
             appendix_topology.extend(_build_focus_diagrams(plan))
         for table_title, headers, rows in _build_formal_tables(plan, chapter):

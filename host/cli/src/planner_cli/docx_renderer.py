@@ -12,6 +12,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 from planner_cli.document_model import Appendix, BulletBlock, DiagramBlock, DocumentModel, ParagraphBlock, Section, TableBlock
+from planner_cli.graphviz_support import graphviz_install_hint, has_graphviz
 from planner_cli.topology_diagrams import render_diagram_png
 
 
@@ -173,6 +174,11 @@ def _render_table(document: Document, block: TableBlock) -> None:
 def _render_diagram(document: Document, block: DiagramBlock) -> None:
     if block.title:
         document.add_heading(block.title, level=3)
+    if block.source_format == 'graphviz' and not has_graphviz():
+        document.add_paragraph(graphviz_install_hint())
+        for line in block.content.splitlines():
+            document.add_paragraph(line, style="Diagram Code")
+        return
     with tempfile.TemporaryDirectory(prefix="planner-diagram-") as tmpdir:
         image_path = Path(tmpdir) / f"{block.diagram_type or 'diagram'}.png"
         try:
