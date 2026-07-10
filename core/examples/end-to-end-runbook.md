@@ -48,7 +48,7 @@
 
 参考文件：
 
-- `references/experience-page-classification.md`
+- `core/references/experience-page-classification.md`
 
 产出：
 
@@ -69,8 +69,8 @@
 
 参考文件：
 
-- `references/experience-absorption-spec.md`
-- `references/research-analysis-design-flow.md`
+- `core/references/experience-absorption-spec.md`
+- `core/references/research-analysis-design-flow.md`
 
 产出：
 
@@ -104,9 +104,9 @@
 
 参考文件：
 
-- `references/input-contract.md`
-- `references/page-to-input-mapping.md`
-- `references/system-mapping.md`
+- `core/references/input-contract.md`
+- `core/references/page-to-input-mapping.md`
+- `core/references/system-mapping.md`
 
 产出：
 
@@ -130,8 +130,8 @@
 
 参考文件：
 
-- `references/rule-topic-to-design-mapping.md`
-- `references/design-decision-rules.md`
+- `core/references/rule-topic-to-design-mapping.md`
+- `core/references/design-decision-rules.md`
 
 产出：
 
@@ -150,8 +150,8 @@
 
 参考文件：
 
-- `references/experience-page-classification.md`
-- `references/methodology-core.md`
+- `core/references/experience-page-classification.md`
+- `core/references/methodology-core.md`
 
 产出：
 
@@ -166,9 +166,9 @@
 
 参考文件：
 
-- `references/report-outline.md`
-- `references/document-assembly-rules.md`
-- `templates/customer-solution-template.md`
+- `core/references/report-outline.md`
+- `core/references/document-assembly-rules.md`
+- `core/templates/customer-solution-template.md`
 
 装配结果包括：
 
@@ -200,8 +200,8 @@
 
 参考文件：
 
-- `references/evidence-and-assumption-rules.md`
-- `references/document-assembly-rules.md`
+- `core/references/evidence-and-assumption-rules.md`
+- `core/references/document-assembly-rules.md`
 
 产出：
 

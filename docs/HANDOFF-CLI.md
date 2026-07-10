@@ -40,7 +40,7 @@
 - `host/cli/scripts/run_regression.py`
 - `host/cli/scripts/check_report_quality.py`
 - `host/cli/examples/`
-- `industrial-network-planner/examples/standard-input-example.json`
+- `core/examples/standard-input-example.json`
 
 ### 2.4 差距与路线文档
 

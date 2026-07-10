@@ -38,7 +38,11 @@
 
 正式交付件只能由 CLI 正式渲染链路生成。
 
+禁止直接输出自由拼写的 HTML 页面。
+禁止先生成 Markdown/文本，再让模型二次包装成 HTML。
 自由生成 HTML，或先生成其他中间文稿再二次包装成 HTML，均不视为正式交付输出。
+
+如果最终结果里没有 Graphviz 拓扑图，且也没有 Graphviz 缺失提示，则说明当前输出不是正式交付链路结果，必须改为调用 CLI 正式生成。
 
 若使用宿主程序或 CLI，应优先采用正式 HTML 输出链路，确保结果具备：
 
@@ -51,13 +55,13 @@
 
 ## 4. 当前主要参考
 
-- `references/methodology-core.md`
-- `references/input-contract.md`
-- `references/design-decision-rules.md`
-- `references/report-outline.md`
-- `references/document-assembly-rules.md`
-- `references/research-analysis-design-flow.md`
-- `templates/customer-solution-template.md`
+- `core/references/methodology-core.md`
+- `core/references/input-contract.md`
+- `core/references/design-decision-rules.md`
+- `core/references/report-outline.md`
+- `core/references/document-assembly-rules.md`
+- `core/references/research-analysis-design-flow.md`
+- `core/templates/customer-solution-template.md`
 
 ## 5. 使用原则
 

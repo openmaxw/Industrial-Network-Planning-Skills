@@ -66,7 +66,7 @@ host/cli/
 
 当前实现仍然是“可运行初版”，尚未完成：
 
-- 对 `industrial-network-planner/SKILL.md` 读取顺序的完整自动执行
+- 对 `core/SKILL.md` 读取顺序的完整自动执行
 - 对所有 `references/` 规则的深度结构化解析
 - 更细粒度的字段级证据约束与冲突消解
 - 更成熟的正式交付文稿语言质量

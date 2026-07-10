@@ -34,7 +34,11 @@
 
 ## 3. 第一次运行
 
-请优先使用以下命令生成正式 HTML。这个命令是当前项目唯一推荐命令。
+请使用以下命令生成正式 HTML。这个命令是当前项目唯一推荐命令。
+
+不要让模型直接输出 HTML 页面。
+不要先生成 Markdown/文本，再二次包装成 HTML。
+只有执行 CLI 正式命令，才算正式交付输出。
 
 当前 CLI 默认行为也已调整为直接输出正式 HTML；即使不显式传入 `--format html --style formal`，默认也会优先走正式交付链路。
 
@@ -55,7 +59,7 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 
 ```bash
 PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
-  --input industrial-network-planner/examples/standard-input-example.json \
+  --input core/examples/standard-input-example.json \
   --format html --style formal \
   --output output/standard-detailed.html
 ```
@@ -65,15 +69,16 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 - 不建议跳过 CLI、直接让模型自由拼写 HTML
 - 那样得到的通常是普通单栏页面，不是当前仓库的正式交付版式
 - 如果结果里没有拓扑图，且也没有 Graphviz 缺失提示，就说明它不是正式渲染输出
+- 如果结果长得像普通单页网页、彩色卡片页、手工拼接目录页，也基本可以判定它不是正式 CLI 结果
 
 ## 4. 输入文件从哪里开始
 
 推荐从这几个文件开始理解输入：
 
-- `industrial-network-planner/references/input-contract.md`
+- `core/references/input-contract.md`
 - `docs/deployment-and-usage.md`
 - `host/cli/examples/dayawan-unit1-mes-input.json`
-- `industrial-network-planner/examples/standard-input-example.json`
+- `core/examples/standard-input-example.json`
 
 如果你要替换成自己的项目资料，优先补齐以下内容：
 
@@ -127,5 +132,5 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 1. `README.md`
 2. `docs/public-quickstart.md`
 3. `docs/deployment-and-usage.md`
-4. `industrial-network-planner/references/input-contract.md`
+4. `core/references/input-contract.md`
 5. `host/cli/examples/dayawan-unit1-mes-input.json`

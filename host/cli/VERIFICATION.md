@@ -7,7 +7,7 @@
 ## 当前覆盖样例
 
 ### 1. 标准样例
-- `industrial-network-planner/examples/standard-input-example.json`
+- `core/examples/standard-input-example.json`
 
 ### 2. 最小可运行样例
 - `host/cli/examples/minimal-viable-input.json`
