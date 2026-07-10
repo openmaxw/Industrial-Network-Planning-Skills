@@ -31,8 +31,8 @@ def parse_args(argv: list[str]) -> CliOptions:
     generate.add_argument("--output", dest="output_path")
     generate.add_argument("--stdout", action="store_true", dest="stdout")
     generate.add_argument("--strict", action="store_true", dest="strict")
-    generate.add_argument("--style", choices=["draft", "formal"], default="draft", dest="style")
-    generate.add_argument("--format", choices=["md", "docx", "html"], default="md", dest="format")
+    generate.add_argument("--style", choices=["draft", "formal"], default="formal", dest="style")
+    generate.add_argument("--format", choices=["md", "docx", "html"], default="html", dest="format")
 
     args = parser.parse_args(argv)
 
