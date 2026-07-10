@@ -50,8 +50,8 @@ CLI 只接受标准输入包。
 
 输入合同来源：
 
-- `core/references/input-contract.md`
-- `core/references/portable-input-package-spec.md`
+- `industrial-network-planner/references/input-contract.md`
+- `industrial-network-planner/references/portable-input-package-spec.md`
 
 输入应直接表达项目本身的信息，包括：
 

@@ -13,7 +13,7 @@ class CoreAssetLoadError(Exception):
     pass
 
 
-ROOT_MARKERS = ["core", "docs", "adapters", "output"]
+ROOT_MARKERS = ["industrial-network-planner", "docs", "adapters", "output"]
 
 
 def discover_repo_root(start: Path) -> Path:
@@ -25,9 +25,9 @@ def discover_repo_root(start: Path) -> Path:
 
 def load_core_assets(repo_root: Path) -> CoreAssets:
     try:
-        template = (repo_root / "core/templates/customer-solution-template.md").read_text(encoding="utf-8")
-        report_outline = (repo_root / "core/references/report-outline.md").read_text(encoding="utf-8")
-        document_rules = (repo_root / "core/references/document-assembly-rules.md").read_text(encoding="utf-8")
+        template = (repo_root / "industrial-network-planner/templates/customer-solution-template.md").read_text(encoding="utf-8")
+        report_outline = (repo_root / "industrial-network-planner/references/report-outline.md").read_text(encoding="utf-8")
+        document_rules = (repo_root / "industrial-network-planner/references/document-assembly-rules.md").read_text(encoding="utf-8")
     except OSError as exc:
         raise CoreAssetLoadError(f"Failed to load core assets: {exc}") from exc
 

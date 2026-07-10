@@ -55,7 +55,7 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 
 ```bash
 PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
-  --input core/examples/standard-input-example.json \
+  --input industrial-network-planner/examples/standard-input-example.json \
   --format html --style formal \
   --output output/standard-detailed.html
 ```
@@ -69,10 +69,10 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 
 推荐从这几个文件开始理解输入：
 
-- `core/references/input-contract.md`
+- `industrial-network-planner/references/input-contract.md`
 - `docs/deployment-and-usage.md`
 - `host/cli/examples/dayawan-unit1-mes-input.json`
-- `core/examples/standard-input-example.json`
+- `industrial-network-planner/examples/standard-input-example.json`
 
 如果你要替换成自己的项目资料，优先补齐以下内容：
 
@@ -126,5 +126,5 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 1. `README.md`
 2. `docs/public-quickstart.md`
 3. `docs/deployment-and-usage.md`
-4. `core/references/input-contract.md`
+4. `industrial-network-planner/references/input-contract.md`
 5. `host/cli/examples/dayawan-unit1-mes-input.json`

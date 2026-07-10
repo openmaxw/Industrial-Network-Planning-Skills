@@ -747,8 +747,8 @@ def render_markdown(plan: PlanBundle, assets: CoreAssets, style: str = "draft") 
     if style != "formal":
         lines.append("- 输出宿主：`host/cli`")
         lines.append(f"- 输出风格：`{style}`")
-        lines.append("- 方法依据：`core/SKILL.md` + ISA95 + IEC62443")
-        lines.append("- 模板来源：`core/templates/customer-solution-template.md`")
+        lines.append("- 方法依据：`industrial-network-planner/SKILL.md` + ISA95 + IEC62443")
+        lines.append("- 模板来源：`industrial-network-planner/templates/customer-solution-template.md`")
     else:
         lines.append("- 设计依据：工业网络分层承载、边界隔离、受控访问与运维可管可控原则")
     lines.append("")

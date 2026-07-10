@@ -8,7 +8,7 @@
 
 ## 2. 目录说明
 
-- `core/`：方法体系、规则、输入合同、文档装配规则与参考资料
+- `industrial-network-planner/`：方法体系、规则、输入合同、文档装配规则与参考资料
 - `host/cli/`：命令行宿主与生成实现
 - `output/`：本地生成的 HTML 结果
 - `docs/`：项目说明、架构说明与使用文档
@@ -41,7 +41,7 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
 
 ```bash
 PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
-  --input core/examples/standard-input-example.json \
+  --input industrial-network-planner/examples/standard-input-example.json \
   --format html --style formal \
   --output output/standard-detailed.html
 ```

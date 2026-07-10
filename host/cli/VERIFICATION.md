@@ -7,7 +7,7 @@
 ## 当前覆盖样例
 
 ### 1. 标准样例
-- `core/examples/standard-input-example.json`
+- `industrial-network-planner/examples/standard-input-example.json`
 
 ### 2. 最小可运行样例
 - `host/cli/examples/minimal-viable-input.json`
@@ -50,8 +50,6 @@ python3 host/cli/scripts/run_regression.py
   - `**章节摘要**`
   - `**章节结论**`
   - `**规则主题**`
-  - `**适用前提**`
-  - `**闭环条件**`
 
 ## 基础质量门槛检查
 
@@ -75,7 +73,7 @@ python3 host/cli/scripts/check_report_quality.py
 - 不同输入丰富度下都能形成结构完整的方案文档
 - 远程维护主导、地址强继承、多车间协同、高冗余诉求等场景均可生成稳定输出
 - 基础冲突与多重冲突组合场景下能保持证据边界和降级策略
-- 章节叙述、章节结论、规则主题和闭环条件均可稳定输出
+- 章节叙述、章节结论与规则主题均可稳定输出
 - 当前输出已通过基础质量门槛，未发现明显占位式措辞残留
 
 ## 当前仍未被充分验证的部分

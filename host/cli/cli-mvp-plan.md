@@ -15,7 +15,7 @@ CLI MVP 必须具备：
 - 一个明确的 `generate` 主命令
 - 从本地读取标准输入 JSON
 - 对输入进行最小合同校验
-- 基于 `core/` 的模板与规则装配 Markdown 文档
+- 基于 `industrial-network-planner/` 的模板与规则装配 Markdown 文档
 - 输出到本地文件
 - 对失败场景提供清晰错误信息
 
@@ -43,7 +43,7 @@ CLI MVP 暂不处理：
 理想最小示例：
 
 ```bash
-planner generate --input core/examples/standard-input-example.json
+planner generate --input industrial-network-planner/examples/standard-input-example.json
 ```
 
 理想结果：
@@ -109,8 +109,8 @@ CLI MVP 建议采用以下处理链路：
 
 校验参考：
 
-- `core/references/input-contract.md`
-- `core/references/portable-input-package-spec.md`
+- `industrial-network-planner/references/input-contract.md`
+- `industrial-network-planner/references/portable-input-package-spec.md`
 
 ### Step 4：核心资产加载
 
@@ -154,7 +154,7 @@ CLI MVP 建议采用以下处理链路：
 - `command`：CLI 参数解析与入口编排
 - `input`：读取标准输入文件
 - `validation`：输入合同校验
-- `core-loader`：加载模板和规则资产
+- `skill-loader`：加载模板和规则资产
 - `planner`：构建中间规划结果
 - `renderer`：渲染 Markdown
 - `writer`：写入输出文件
@@ -187,7 +187,7 @@ CLI 输出文档时应遵守以下原则：
 
 输入参考：
 
-- `core/examples/standard-input-example.json`
+- `industrial-network-planner/examples/standard-input-example.json`
 
 输出目标：
 

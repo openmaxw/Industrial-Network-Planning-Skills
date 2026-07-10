@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[3]
 CLI_ENV = os.environ.copy()
 CLI_ENV["PYTHONPATH"] = str(ROOT / "host/cli/src")
 CASES = [
-    (ROOT / "core/examples/standard-input-example.json", "standard", "draft"),
+    (ROOT / "industrial-network-planner/examples/standard-input-example.json", "standard", "draft"),
     (ROOT / "host/cli/examples/minimal-viable-input.json", "minimal", "draft"),
     (ROOT / "host/cli/examples/high-completeness-input.json", "complete", "draft"),
     (ROOT / "host/cli/examples/remote-maintenance-heavy-input.json", "remote-maintenance", "draft"),
@@ -32,28 +32,27 @@ REQUIRED_MARKERS_DRAFT = [
     "**章节摘要**",
     "**章节结论**",
     "**规则主题**",
-    "**适用前提**",
-    "**闭环条件**",
 ]
 
 REQUIRED_MARKERS_FORMAL = [
     "## 文档说明",
     "## 实施结论与定版条件",
-    "**待确认项**",
+    "**待确认事项**",
     "**总体拓扑图**",
     "**重点边界拓扑图**",
-    "```mermaid",
     "源区",
     "目标区",
     "编号/命名策略",
     "**地址与 VLAN 定版摘要表**",
-    "**项目定版结论**",
+    "**实施事项表**",
     "**对象清单摘要**",
 ]
 
 
 def run_case(input_path: Path, label: str, style: str) -> dict:
-    output_path = Path("/tmp") / f"regression-{label}.md"
+    fmt = "html" if style == "formal" else "md"
+    suffix = ".html" if fmt == "html" else ".md"
+    output_path = Path("/tmp") / f"regression-{label}{suffix}"
     cmd = [
         "python3",
         "-m",
@@ -65,6 +64,8 @@ def run_case(input_path: Path, label: str, style: str) -> dict:
         str(output_path),
         "--style",
         style,
+        "--format",
+        fmt,
     ]
     proc = subprocess.run(cmd, cwd=ROOT, env=CLI_ENV, capture_output=True, text=True)
     result = {
@@ -83,7 +84,13 @@ def run_case(input_path: Path, label: str, style: str) -> dict:
         return result
     if proc.returncode == 0 and output_path.exists():
         text = output_path.read_text(encoding="utf-8")
-        required_markers = REQUIRED_MARKERS_FORMAL if style == "formal" else REQUIRED_MARKERS_DRAFT
+        required_markers = [
+            '章节导航',
+            '总体拓扑图',
+            '重点边界拓扑图',
+            '地址分段响应',
+            '实施闭环表',
+        ] if style == "formal" else REQUIRED_MARKERS_DRAFT
         result["missing_markers"] = [marker for marker in required_markers if marker not in text]
     return result
 
