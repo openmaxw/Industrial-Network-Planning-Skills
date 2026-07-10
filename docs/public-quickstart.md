@@ -36,6 +36,8 @@
 
 ## 3. 第一次运行
 
+请优先使用以下命令生成正式 HTML。这个结果就是当前项目推荐的标准交付样式。
+
 在仓库根目录执行：
 
 ```bash
@@ -57,6 +59,11 @@ PYTHONPATH=host/cli/src python3 -m planner_cli.main generate \
   --format html --style formal \
   --output output/standard-detailed.html
 ```
+
+注意：
+
+- 不建议跳过 CLI、直接让模型自由拼写 HTML
+- 那样得到的通常是普通单栏页面，不是当前仓库的正式交付版式
 
 ## 4. 输入文件从哪里开始
 
