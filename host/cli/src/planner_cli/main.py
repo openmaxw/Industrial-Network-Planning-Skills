@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from planner_cli.core_loader import CoreAssetLoadError, discover_repo_root, load_core_assets
-from planner_cli.docx_renderer import render_docx
 from planner_cli.document_builder import build_document_model
 from planner_cli.html_renderer import render_html
 from planner_cli.exit_codes import (
@@ -88,6 +87,8 @@ def run_generate(options: CliOptions) -> int:
     plan_bundle = build_plan_bundle(payload)
 
     if options.format == "docx":
+        from planner_cli.docx_renderer import render_docx
+
         if options.stdout:
             print("Error: DOCX output does not support --stdout.", file=sys.stderr)
             return ARGUMENT_ERROR

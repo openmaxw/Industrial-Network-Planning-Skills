@@ -24,6 +24,11 @@
 - `python3`
 - Graphviz（可选，但建议安装）
 
+说明补充：
+
+- 仅生成 HTML 时，不需要安装 `python-docx`
+- 只有在输出 DOCX 时，才需要额外安装相关依赖
+
 说明：
 
 - 未安装 Graphviz 时，HTML 仍可生成
