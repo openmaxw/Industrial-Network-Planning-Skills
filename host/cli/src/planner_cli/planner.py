@@ -52,7 +52,7 @@ class PlanBundle:
 
 def _as_list(value: object) -> list[str]:
     if isinstance(value, list):
-        return [str(item) for item in value if str(item).strip()]
+        return [str(item) for item in value if str(item).strip() and not isinstance(item, (dict, list, tuple))]
     if isinstance(value, str) and value.strip():
         return [value]
     return []

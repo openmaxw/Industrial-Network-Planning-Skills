@@ -91,9 +91,21 @@ class InferenceBundle:
 
 
 
+
+
+def _looks_structured_object(value: object) -> bool:
+    if isinstance(value, (dict, list, tuple)):
+        return True
+    text = str(value).strip()
+    if not text:
+        return False
+    if (text.startswith('{') and text.endswith('}')) or (text.startswith('[') and text.endswith(']')):
+        return True
+    return any(token in text for token in ["{'id':", '{"id":', "'source':", '"source":', "'target':", '"target":', "'members':", '"members":'])
+
 def _list_items(values: object, source: str, evidence_type: str) -> list[EvidenceItem]:
     if isinstance(values, list):
-        return [EvidenceItem(text=str(item), source=source, evidence_type=evidence_type) for item in values if str(item).strip()]
+        return [EvidenceItem(text=str(item), source=source, evidence_type=evidence_type) for item in values if str(item).strip() and not _looks_structured_object(item)]
     if isinstance(values, str) and values.strip():
         return [EvidenceItem(text=values, source=source, evidence_type=evidence_type)]
     return []

@@ -33,6 +33,26 @@ def _raw_items(items, limit=None):
     return [item.text.strip() for item in values if item.text.strip()]
 
 
+def _looks_structured_object_text(text: str) -> bool:
+    value = text.strip()
+    if not value:
+        return False
+    if (value.startswith('{') and value.endswith('}')) or (value.startswith('[') and value.endswith(']')):
+        return True
+    return any(token in value for token in ["{'id':", '{"id":', "'source':", '"source":', "'target':", '"target":', "'members':", '"members":'])
+
+
+def _clean_raw_texts(items, limit=None):
+    values = items[:limit] if limit is not None else items
+    cleaned = []
+    for item in values:
+        value = item.text.strip()
+        if not value or _looks_structured_object_text(value):
+            continue
+        cleaned.append(value)
+    return cleaned
+
+
 def _normalize_raw_text(text: str) -> str:
     value = text.strip()
     prefixes = [
@@ -113,6 +133,8 @@ def _group_raw_inputs(chapter_title: str, chapter) -> list[BulletBlock]:
         matched = []
         for item in facts:
             text = item.text.strip()
+            if _looks_structured_object_text(text):
+                continue
             if any(keyword in text for keyword in keywords):
                 matched.append(text)
         if matched:
@@ -162,7 +184,9 @@ def _group_raw_inputs(chapter_title: str, chapter) -> list[BulletBlock]:
         return grouped
 
     if facts:
-        grouped.append(BulletBlock(title='基础事实记录', items=_numbered(_raw_items(facts, limit=4))))
+        cleaned_raw = _clean_raw_texts(facts, limit=4)
+        if cleaned_raw:
+            grouped.append(BulletBlock(title='基础事实记录', items=_numbered(cleaned_raw)))
     return grouped
 
 
