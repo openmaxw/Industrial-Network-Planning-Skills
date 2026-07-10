@@ -33,7 +33,7 @@
 - `host/cli/src/planner_cli/phrasing.py`
 - `host/cli/src/planner_cli/prose.py`
 - `host/cli/src/planner_cli/planner.py`
-- `host/cli/src/planner_cli/renderer.py`
+- `host/cli/src/planner_cli/formal_support.py`
 
 ### 2.3 验证与样例
 

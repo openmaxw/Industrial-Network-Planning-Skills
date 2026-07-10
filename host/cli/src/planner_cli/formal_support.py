@@ -1,8 +1,5 @@
-from planner_cli.core_loader import CoreAssets
 from planner_cli.models import EvidenceItem
 from planner_cli.planner import Chapter, PlanBundle
-
-
 
 
 def _formalize_result_text(text: str) -> str:
@@ -17,50 +14,28 @@ def _formalize_result_text(text: str) -> str:
         ('建议对', '对'),
         ('建议通过', '通过'),
         ('建议保留', '保留'),
-        ('建议划分', '划分'),
         ('建议设置', '设置'),
-        ('建议组织', '组织'),
-        ('建议延续', '延续'),
-        ('建议强化', '强化'),
-        ('建议', ''),
-        ('宜先', '先'),
-        ('宜对', '对'),
-        ('宜按', '按'),
-        ('宜围绕', '围绕'),
-        ('宜以', '以'),
-        ('宜在', '在'),
-        ('宜通过', '通过'),
-        ('宜保留', '保留'),
-        ('宜采用', '采用'),
-        ('宜', ''),
-        ('VLAN 组织建议：', 'VLAN 组织：'),
-        ('命名建议：', '命名规则：'),
-        ('访问路径建议：', '访问路径：'),
-        ('关键设备部署建议应以', '关键设备部署以'),
-        ('实施路径应强调', '实施路径按'),
-        ('不宜直接承诺', '暂不直接固化'),
-        ('原则性冗余建议', '冗余控制要求'),
-        ('规划原则', '区域级规划结果'),
-        ('现有设备对象：', ''),
-        ('现网层级：', ''),
-        ('系统对象：', ''),
-        ('角色对象：', ''),
-        ('部署位置：', ''),
-        ('主要连接：', ''),
-        ('关键通信：', ''),
-        ('协议线索：', ''),
-        ('安全目标：', ''),
-        ('候选分区：', ''),
-        ('边界要求：', ''),
-        ('审计要求：', ''),
-        ('调研关注风险：', ''),
-        ('项目约束：', ''),
-        ('边界对象：', ''),
+        ('建议部署', '部署'),
+        ('建议明确', '明确'),
     ]
     for old, new in replacements:
         value = value.replace(old, new)
-    value = ' '.join(value.split())
-    return value + '。'
+    return value + ('。' if value and not value.endswith('。') else '')
+
+
+def _top_texts(items: list[EvidenceItem], limit: int = 3) -> list[str]:
+    return [_clean_table_cell(item.text) for item in items[:limit]]
+
+
+def _first(values: list[str], fallback: str) -> str:
+    return values[0] if values else fallback
+
+
+def _rows_from_dicts(items: list[dict], keys: list[str]) -> list[list[str]]:
+    rows: list[list[str]] = []
+    for item in items:
+        rows.append([str(item.get(key, "-")).strip() or "-" for key in keys])
+    return rows
 
 
 def _clean_table_cell(text: str) -> str:
@@ -69,27 +44,80 @@ def _clean_table_cell(text: str) -> str:
     value = value.replace('原则性冗余', '冗余要求')
     value = value.replace('当前设计以', '当前按').replace('默认', '按')
     return ' '.join(value.split())
-def _append_evidence_list(lines: list[str], items: list[EvidenceItem], fallback: str, show_source: bool = True, limit: int | None = None) -> None:
-    if items:
-        rendered = items[:limit] if limit is not None else items
-        for item in rendered:
-            suffix = f"（来源：`{item.source}`）" if show_source and item.source else ""
-            rendered_text = _formalize_result_text(item.text) if not show_source else item.text
-            lines.append(f"- {rendered_text}{suffix}")
-    else:
-        lines.append(f"- {fallback}")
-    lines.append("")
 
 
-def _append_table(lines: list[str], headers: list[str], rows: list[list[str]]) -> None:
-    if not rows:
-        return
-    lines.append("| " + " | ".join(headers) + " |")
-    lines.append("| " + " | ".join(["---"] * len(headers)) + " |")
-    for row in rows:
-        normalized = [cell.replace("\n", " ").strip() or "-" for cell in row]
-        lines.append("| " + " | ".join(normalized) + " |")
-    lines.append("")
+
+
+FORMAL_TITLE_MAP = {
+    "项目概述与建设目标": "项目概述",
+    "现状网络与调研结论": "现场调研与现状结论",
+    "设计依据与方法说明": "设计原则与技术路线",
+    "现场环境与工程约束": "现场环境与工程约束",
+    "总体网络架构方案": "网络拓扑与分层设计",
+    "拓扑结构与冗余设计说明": "稳定性与冗余设计",
+    "IEC62443 分区分域与安全边界设计": "网络分区与边界控制方案",
+    "网络拓扑与通信路径说明": "网络拓扑图",
+    "带宽与性能设计说明": "性能设计与时延分析",
+    "IP 地址、VLAN 与子网规划": "地址分段与 VLAN 规划",
+    "关键设备与部署建议": "关键设备部署方案",
+    "通信与运维接入方案": "通信与运维接入方案",
+    "实施步骤与迁移建议": "实施方案与切换策略",
+    "风险、假设与待确认项": "风险分析与待确认事项",
+    "结论与建议": "实施结论与定版条件",
+}
+
+
+
+HIDE_FORMAL_TITLES = {
+}
+
+def _chapter_map(chapters: list[Chapter]) -> dict[str, Chapter]:
+    return {chapter.title: chapter for chapter in chapters}
+
+
+
+
+def _formal_ordered_chapters(chapters: list[Chapter]) -> list[Chapter]:
+    by_title = _chapter_map(chapters)
+    ordered_titles = [
+        "项目概述与建设目标",
+        "现状网络与调研结论",
+        "设计依据与方法说明",
+        "需求与约束分析",
+        "技术选择与方案比较",
+        "现场环境与工程约束",
+        "总体网络架构方案",
+        "拓扑结构与冗余设计说明",
+        "IEC62443 分区分域与安全边界设计",
+        "网络拓扑与通信路径说明",
+        "带宽与性能设计说明",
+        "IP 地址、VLAN 与子网规划",
+        "关键设备与部署建议",
+        "通信与运维接入方案",
+        "实施步骤与迁移建议",
+        "风险、假设与待确认项",
+        "ISA95 层级建模与系统协同结构",
+        "结论与建议",
+    ]
+    ordered = [by_title[title] for title in ordered_titles if title in by_title]
+    extras = [chapter for chapter in chapters if chapter.title not in ordered_titles]
+    return ordered + extras
+
+
+
+
+COMPACT_SECTION_GROUPS = [
+    ("项目概述与建设范围", ["项目概述与建设目标"]),
+    ("业务分析与系统协同", ["业务分析与系统协同", "ISA95 层级建模与系统协同结构"]),
+    ("调研结论与设计依据", ["现状网络与调研结论", "设计依据与方法说明", "需求与约束分析", "技术选择与方案比较", "现场环境与工程约束"]),
+    ("总体架构与安全设计", ["总体网络架构方案", "IEC62443 分区分域与安全边界设计", "网络拓扑与通信路径说明"]),
+    ("工程设计", ["拓扑结构与冗余设计说明", "带宽与性能设计说明", "IP 地址、VLAN 与子网规划", "关键设备与部署建议", "通信与运维接入方案"]),
+    ("通信关系与实施设计", ["实施步骤与迁移建议"]),
+    ("风险、假设与待确认项", ["风险、假设与待确认项"]),
+    ("结论与建议", ["结论与建议"]),
+]
+
+
 
 
 def _build_topology_mermaid(plan: PlanBundle) -> str:
@@ -225,21 +253,6 @@ def _build_boundary_topology_mermaid(plan: PlanBundle) -> str:
 
     lines.append("```")
     return "\n".join(lines)
-
-
-def _rows_from_dicts(items: list[dict], keys: list[str]) -> list[list[str]]:
-    rows: list[list[str]] = []
-    for item in items:
-        rows.append([str(item.get(key, "-")).strip() or "-" for key in keys])
-    return rows
-
-
-def _top_texts(items: list[EvidenceItem], limit: int = 3) -> list[str]:
-    return [_clean_table_cell(item.text) for item in items[:limit]]
-
-
-def _first(values: list[str], fallback: str) -> str:
-    return values[0] if values else fallback
 
 
 def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, list[str], list[list[str]]]]:
@@ -493,364 +506,3 @@ def _build_formal_tables(plan: PlanBundle, chapter: Chapter) -> list[tuple[str, 
         )]
 
     return []
-
-
-def _render_formal_chapter(lines: list[str], plan: PlanBundle, chapter: Chapter) -> None:
-    display_title = FORMAL_TITLE_MAP.get(chapter.title, chapter.title)
-    lines.append(f"## {display_title}")
-    lines.append("")
-
-    if chapter.title == "网络拓扑与通信路径说明":
-        lines.append("**总体拓扑图**")
-        lines.append("")
-        lines.append(_build_topology_mermaid(plan))
-        lines.append("")
-        lines.append("**重点边界拓扑图**")
-        lines.append("")
-        lines.append(_build_boundary_topology_mermaid(plan))
-        lines.append("")
-
-    for table_title, headers, rows in _build_formal_tables(plan, chapter):
-        lines.append(table_title)
-        lines.append("")
-        _append_table(lines, headers, rows)
-
-    result_titles = {
-        "项目概述与建设目标": "**本节结论**",
-        "现状网络与调研结论": "**调研结论摘要**",
-        "设计依据与方法说明": "**设计说明**",
-        "需求与约束分析": "**需求与约束结论**",
-        "技术选择与方案比较": "**技术选择说明**",
-        "总体网络架构方案": "**架构说明**",
-        "IEC62443 分区分域与安全边界设计": "**边界控制说明**",
-        "网络拓扑与通信路径说明": "**通信路径说明**",
-        "IP 地址、VLAN 与子网规划": "**地址规划说明**",
-        "关键设备与部署建议": "**设备部署说明**",
-        "通信与运维接入方案": "**运维接入说明**",
-        "实施步骤与迁移建议": "**实施安排**",
-        "风险、假设与待确认项": "**风险说明**",
-        "结论与建议": "**执行结论**",
-    }
-
-    if chapter.conclusion:
-        lines.append(result_titles.get(chapter.title, "**本章结论**"))
-        lines.append("")
-        lines.append(_formalize_result_text(chapter.conclusion))
-        lines.append("")
-    elif chapter.narrative and chapter.title in {"项目概述与建设目标", "现状网络与调研结论", "需求与约束分析", "技术选择与方案比较"}:
-        lines.append(result_titles.get(chapter.title, "**本章结论**"))
-        lines.append("")
-        lines.append(_formalize_result_text(chapter.narrative))
-        lines.append("")
-
-    if chapter.confirmed_facts:
-        label = "**现状与已知条件**" if chapter.title in {"项目概述与建设目标", "现状网络与调研结论"} else "**设计依据**"
-        lines.append(label)
-        lines.append("")
-        limit = 3 if chapter.title in {"网络拓扑与通信路径说明", "IP 地址、VLAN 与子网规划", "关键设备与部署建议"} else 4
-        _append_evidence_list(lines, chapter.confirmed_facts, "当前未补充相关内容。", show_source=False, limit=limit)
-
-    if chapter.recommendations and chapter.title not in {"结论与建议"}:
-        label = "**方案说明**" if chapter.title != "实施步骤与迁移建议" else "**实施安排**"
-        lines.append(label)
-        lines.append("")
-        limit = 3 if chapter.title in {"网络拓扑与通信路径说明", "IP 地址、VLAN 与子网规划", "关键设备与部署建议"} else 4
-        _append_evidence_list(lines, chapter.recommendations, "当前未补充相关内容。", show_source=False, limit=limit)
-
-    if chapter.pending_items:
-        lines.append("**待确认事项**")
-        lines.append("")
-        _append_evidence_list(lines, chapter.pending_items, "当前无新增待确认项。", show_source=False, limit=3)
-
-
-def _render_draft_chapter(lines: list[str], chapter: Chapter) -> None:
-    lines.append(f"## {chapter.title}")
-    lines.append("")
-    lines.append("**章节摘要**")
-    lines.append("")
-    lines.append(chapter.narrative if chapter.narrative else "当前未生成章节摘要。")
-    lines.append("")
-    lines.append("**章节结论**")
-    lines.append("")
-    lines.append(chapter.conclusion if chapter.conclusion else "当前未生成章节结论。")
-    lines.append("")
-    lines.append("**本章目标**")
-    lines.append("")
-    lines.append(f"- {chapter.objective}")
-    lines.append("")
-    lines.append("**输入来源**")
-    lines.append("")
-    for item in chapter.input_sources:
-        lines.append(f"- `{item}`")
-    lines.append("")
-    lines.append("**规则主题**")
-    lines.append("")
-    for item in chapter.rule_topics:
-        lines.append(f"- `{item}`")
-    lines.append("")
-    lines.append("**适用条件**")
-    lines.append("")
-    if chapter.applicability:
-        pass
-    if chapter.closure_conditions:
-        pass
-    lines.append("**已确认事实**")
-    lines.append("")
-    _append_evidence_list(lines, chapter.confirmed_facts, "现阶段暂无进一步可确认事实。", limit=4)
-    lines.append("**规划建议**")
-    lines.append("")
-    _append_evidence_list(lines, chapter.recommendations, "本章暂无补充规划建议。", limit=4)
-    lines.append("**假设项**")
-    lines.append("")
-    _append_evidence_list(lines, chapter.assumptions, "本章暂无新增假设项。", limit=3)
-    lines.append("**待确认事项**")
-    lines.append("")
-    _append_evidence_list(lines, chapter.pending_items, "本章暂无新增待确认项。", limit=3)
-
-
-
-
-
-
-FORMAL_TITLE_MAP = {
-    "项目概述与建设目标": "项目概述",
-    "现状网络与调研结论": "现场调研与现状结论",
-    "设计依据与方法说明": "设计原则与技术路线",
-    "现场环境与工程约束": "现场环境与工程约束",
-    "总体网络架构方案": "网络拓扑与分层设计",
-    "拓扑结构与冗余设计说明": "稳定性与冗余设计",
-    "IEC62443 分区分域与安全边界设计": "网络分区与边界控制方案",
-    "网络拓扑与通信路径说明": "网络拓扑图",
-    "带宽与性能设计说明": "性能设计与时延分析",
-    "IP 地址、VLAN 与子网规划": "地址分段与 VLAN 规划",
-    "关键设备与部署建议": "关键设备部署方案",
-    "通信与运维接入方案": "通信与运维接入方案",
-    "实施步骤与迁移建议": "实施方案与切换策略",
-    "风险、假设与待确认项": "风险分析与待确认事项",
-    "结论与建议": "实施结论与定版条件",
-}
-
-HIDE_FORMAL_TITLES = {
-}
-
-def _chapter_map(chapters: list[Chapter]) -> dict[str, Chapter]:
-    return {chapter.title: chapter for chapter in chapters}
-
-
-def _formal_ordered_chapters(chapters: list[Chapter]) -> list[Chapter]:
-    by_title = _chapter_map(chapters)
-    ordered_titles = [
-        "项目概述与建设目标",
-        "现状网络与调研结论",
-        "设计依据与方法说明",
-        "需求与约束分析",
-        "技术选择与方案比较",
-        "现场环境与工程约束",
-        "总体网络架构方案",
-        "拓扑结构与冗余设计说明",
-        "IEC62443 分区分域与安全边界设计",
-        "网络拓扑与通信路径说明",
-        "带宽与性能设计说明",
-        "IP 地址、VLAN 与子网规划",
-        "关键设备与部署建议",
-        "通信与运维接入方案",
-        "实施步骤与迁移建议",
-        "风险、假设与待确认项",
-        "ISA95 层级建模与系统协同结构",
-        "结论与建议",
-    ]
-    ordered = [by_title[title] for title in ordered_titles if title in by_title]
-    extras = [chapter for chapter in chapters if chapter.title not in ordered_titles]
-    return ordered + extras
-
-
-COMPACT_SECTION_GROUPS = [
-    ("项目概述与建设范围", ["项目概述与建设目标"]),
-    ("业务分析与系统协同", ["业务分析与系统协同", "ISA95 层级建模与系统协同结构"]),
-    ("调研结论与设计依据", ["现状网络与调研结论", "设计依据与方法说明", "需求与约束分析", "技术选择与方案比较", "现场环境与工程约束"]),
-    ("总体架构与安全设计", ["总体网络架构方案", "IEC62443 分区分域与安全边界设计", "网络拓扑与通信路径说明"]),
-    ("工程设计", ["拓扑结构与冗余设计说明", "带宽与性能设计说明", "IP 地址、VLAN 与子网规划", "关键设备与部署建议", "通信与运维接入方案"]),
-    ("通信关系与实施设计", ["实施步骤与迁移建议"]),
-    ("风险、假设与待确认项", ["风险、假设与待确认项"]),
-    ("结论与建议", ["结论与建议"]),
-]
-
-
-def _render_compact_formal(lines: list[str], plan: PlanBundle) -> None:
-    by_title = _chapter_map(plan.chapters)
-    for section_title, chapter_titles in COMPACT_SECTION_GROUPS:
-        matched = [by_title[title] for title in chapter_titles if title in by_title and title not in HIDE_FORMAL_TITLES]
-        if not matched:
-            continue
-        lines.append(f"## {section_title}")
-        lines.append("")
-        for chapter in matched:
-            display_title = FORMAL_TITLE_MAP.get(chapter.title, chapter.title)
-            lines.append(f"### {display_title}")
-            lines.append("")
-            if chapter.conclusion:
-                lines.append(f"【{display_title}】{_formalize_result_text(chapter.conclusion)}")
-                lines.append("")
-            if chapter.confirmed_facts:
-                raw_limit = 6 if chapter.title in {"业务分析与系统协同", "现状网络与调研结论", "现场环境与工程约束"} else 4
-                lines.append("**基础事实记录**")
-                lines.append("")
-                _append_evidence_list(lines, chapter.confirmed_facts, "当前未补充相关内容。", show_source=False, limit=raw_limit)
-            for table_title, headers, rows in _build_formal_tables(plan, chapter):
-                lines.append(f"**{table_title.replace('**', '')}**")
-                lines.append("")
-                _append_table(lines, headers, rows)
-            if chapter.confirmed_facts:
-                lines.append("**设计依据**")
-                lines.append("")
-                _append_evidence_list(lines, chapter.confirmed_facts, "当前未补充相关内容。", show_source=False, limit=4)
-            if chapter.recommendations and chapter.title not in {"结论与建议"}:
-                lines.append("**方案说明**")
-                lines.append("")
-                _append_evidence_list(lines, chapter.recommendations, "当前未补充相关内容。", show_source=False, limit=4)
-            if chapter.pending_items:
-                lines.append("**待确认项**")
-                lines.append("")
-                _append_evidence_list(lines, chapter.pending_items, "当前无新增待确认项。", show_source=False, limit=3)
-
-
-def _build_executive_summary(plan: PlanBundle) -> list[str]:
-    lines: list[str] = []
-    scope = (plan.scope or '').strip()
-    if scope.startswith('覆盖'):
-        scope = scope[2:].strip('，。 ')
-    lines.append("## 执行摘要")
-    lines.append("")
-    lines.append(f"- 本方案覆盖 {scope or plan.scope}，用于形成可评审、可定版、可实施的网络建设结果。")
-    lines.append("- 总体架构已明确为核心汇聚、控制承载、业务接入与边界隔离分层组织，跨域通信统一通过受控边界收口。")
-    lines.append("- 文档直接给出网络分区、拓扑路径、地址与 VLAN 组织、关键设备部署及实施安排，不再以原则性描述替代设计结果。")
-    lines.append("- 当前已确定内容可直接作为深化设计基础；未闭合事项统一列入“待确认项”，用于后续定版控制。")
-    lines.append("- 本文档用于业主评审、实施组织、采购边界确认及后续现场落地。")
-    lines.append("")
-    return lines
-
-def render_markdown(plan: PlanBundle, assets: CoreAssets, style: str = "draft") -> str:
-    lines: list[str] = []
-    lines.append(f"# {plan.project_name} 工业网络方案")
-    lines.append("")
-    if style == "formal":
-        lines.append("> 本文档为面向客户交付的综合性网络方案版本。")
-    else:
-        lines.append("> 本文档由 `industrial-network-planner` CLI 生成，定位为基于 ISA95 + IEC62443 方法体的客户交付级方案草案。")
-    lines.append("")
-    lines.append("## 文档说明")
-    lines.append("")
-    lines.append(f"- 客户名称：{plan.customer_name}")
-    lines.append(f"- 项目地点：{plan.site_name}")
-    lines.append(f"- 建设目标：{plan.objective}")
-    lines.append(f"- 建设范围：{plan.scope}")
-    if style != "formal":
-        lines.append("- 输出宿主：`host/cli`")
-        lines.append(f"- 输出风格：`{style}`")
-        lines.append("- 方法依据：`industrial-network-planner/SKILL.md` + ISA95 + IEC62443")
-        lines.append("- 模板来源：`industrial-network-planner/templates/customer-solution-template.md`")
-    else:
-        lines.append("- 设计依据：工业网络分层承载、边界隔离、受控访问与运维可管可控原则")
-    lines.append("")
-
-    if style == "formal":
-        lines.extend(_build_executive_summary(plan))
-        _render_compact_formal(lines, plan)
-    else:
-        for chapter in plan.chapters:
-            _render_draft_chapter(lines, chapter)
-
-    lines.append("## 附录")
-    lines.append("")
-    if style == "formal":
-        lines.append("**对象清单摘要**")
-        lines.append("")
-        if plan.appendix_assets:
-            asset_text = "、".join(item.text for item in plan.appendix_assets[:6])
-            lines.append(f"- 方案涉及的主要对象包括：{asset_text}。")
-        else:
-            lines.append("- 当前未补充对象清单摘要。")
-        lines.append("")
-
-        lines.append("**网络规划摘要**")
-        lines.append("")
-        if plan.appendix_networks:
-            lines.append(f"- 地址与分段规划按以下结果执行：{plan.appendix_networks[0].text}。")
-        else:
-            lines.append("- 当前未补充地址规划摘要。")
-        if plan.appendix_links:
-            communication_summary = "；".join(item.text for item in plan.appendix_links[:3])
-            lines.append(f"- 关键连接关系包括：{communication_summary}。")
-        else:
-            lines.append("- 当前未补充关键连接摘要。")
-        lines.append("")
-    else:
-        lines.append("**核心资产清单**")
-        lines.append("")
-        if plan.appendix_assets:
-            for item in plan.appendix_assets:
-                lines.append(f"- {item.text}（来源：`{item.source}`）")
-        else:
-            lines.append("- 当前未记录资产对象。")
-        lines.append("")
-
-        lines.append("**通信关系摘要**")
-        lines.append("")
-        if plan.appendix_links:
-            for item in plan.appendix_links:
-                lines.append(f"- {item.text}（来源：`{item.source}`）")
-        else:
-            lines.append("- 当前未记录通信关系。")
-        lines.append("")
-
-        lines.append("**地址规划摘要**")
-        lines.append("")
-        if plan.appendix_networks:
-            for item in plan.appendix_networks:
-                lines.append(f"- {item.text}（来源：`{item.source}`）")
-        else:
-            lines.append("- 当前未记录地址规划信息。")
-        lines.append("")
-
-        dedup_pending = []
-        seen_pending = set()
-        for chapter in plan.chapters:
-            for item in chapter.pending_items:
-                key = item.text.strip()
-                if key and key not in seen_pending:
-                    seen_pending.add(key)
-                    dedup_pending.append(item)
-
-        lines.append("## 输出前自检")
-        lines.append("")
-        lines.append("**通过项**")
-        lines.append("")
-        if plan.audit.checks:
-            for item in plan.audit.checks:
-                lines.append(f"- {item}")
-        else:
-            lines.append("- 当前未记录通过项。")
-        lines.append("")
-        lines.append("**警告项**")
-        lines.append("")
-        if plan.audit.warnings:
-            for item in plan.audit.warnings:
-                lines.append(f"- {item}")
-        else:
-            lines.append("- 当前未发现结构性装配问题。")
-        lines.append("")
-
-        lines.append("## 证据边界说明")
-        lines.append("")
-        lines.append("- 当高优先级事实与较低优先级设计结论存在冲突时，优先保留事实，并将设计内容降级为建议或待确认。")
-        lines.append("- 涉及现场复核项与客户确认项的结论，不输出为实施定稿。")
-        lines.append("")
-        lines.append("## 装配注记")
-        lines.append("")
-        lines.append("- 文档按固定章节结构输出，优先装配事实，再装配建议，再单列假设与待确认项。")
-        lines.append("- 若地址、边界或部署信息不足，当前版本仅输出规划原则与建议，不输出确定性定稿结论。")
-        lines.append(f"- 模板加载字符数：{len(assets.template)}")
-        lines.append(f"- 大纲加载字符数：{len(assets.report_outline)}")
-        lines.append(f"- 装配规则加载字符数：{len(assets.document_rules)}")
-        lines.append("")
-    return "\n".join(lines)

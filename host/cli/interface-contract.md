@@ -14,21 +14,19 @@
 当前主命令：
 
 ```bash
-planner generate --input <path> [--output <path>] [--stdout] [--strict]
+planner generate --input <path> [--output <path>] [--strict]
 ```
 
 ### 2.1 参数语义
 
 - `--input`：标准输入 JSON 文件路径，必填
-- `--output`：输出 Markdown 文件路径，选填
-- `--stdout`：将结果输出到标准输出，选填
+- `--output`：输出 HTML 文件路径，选填
 - `--strict`：严格模式；将警告提升为失败，选填
 
 ### 2.2 参数约束
 
 - `--input` 必须是本地可读 JSON 文件
-- `--stdout` 与 `--output` 不可同时使用
-- 若不传 `--output`，默认输出到 `output/<project-slug>-solution.md`
+- 若不传 `--output`，默认输出到 `output/<project-slug>-solution.html`
 
 ## 3. 输入合同
 
@@ -93,7 +91,7 @@ CLI 当前把校验结果分为：
 
 ## 5. 输出合同
 
-CLI 当前输出统一为 Markdown。
+CLI 当前输出统一为正式 HTML。
 
 ### 5.1 输出章节目标
 
@@ -140,7 +138,7 @@ CLI 当前输出统一为 Markdown。
 - 单命令生成链路
 - 标准输入读取
 - 最小合同校验
-- 章节化 Markdown 输出
+- 章节化正式 HTML 输出
 - 假设项与待确认项单列
 
 当前实现尚未完全满足：

@@ -6,10 +6,9 @@ from pathlib import Path
 class CliOptions:
     input_path: Path
     output_path: Path | None
-    stdout: bool
     strict: bool
     style: str = "draft"
-    format: str = "md"
+    format: str = "html"
 
 
 @dataclass(slots=True)

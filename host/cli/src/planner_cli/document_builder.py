@@ -3,7 +3,7 @@ from __future__ import annotations
 from planner_cli.document_model import Appendix, BulletBlock, DiagramBlock, DocumentMeta, DocumentModel, ParagraphBlock, Section, TableBlock
 from planner_cli.graphviz_renderer import build_diagram_dot
 from planner_cli.planner import PlanBundle
-from planner_cli.renderer import COMPACT_SECTION_GROUPS, FORMAL_TITLE_MAP, HIDE_FORMAL_TITLES, _build_boundary_topology_mermaid, _build_formal_tables, _build_topology_mermaid, _formal_ordered_chapters, _formalize_result_text
+from planner_cli.formal_support import COMPACT_SECTION_GROUPS, FORMAL_TITLE_MAP, HIDE_FORMAL_TITLES, _build_boundary_topology_mermaid, _build_formal_tables, _build_topology_mermaid, _formal_ordered_chapters, _formalize_result_text
 
 RESULT_TITLES = {
     '项目概述与建设目标': '本节结论',

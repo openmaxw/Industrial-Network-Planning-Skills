@@ -43,7 +43,7 @@ python3 host/cli/scripts/run_regression.py
 
 当前检查内容包括：
 
-- 每个样例都能成功生成 Markdown
+- 每个样例都能成功生成正式 HTML
 - 输出中包含以下关键标记：
   - `## 输出前自检`
   - `## 证据边界说明`

@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-为 `industrial-network-planner` 建立第一版可执行宿主，使仓库能够在不依赖旧系统的前提下，从标准输入包生成客户交付级 Markdown 方案。
+为 `industrial-network-planner` 建立第一版可执行宿主，使仓库能够在不依赖旧系统的前提下，从标准输入包生成客户交付级 HTML 方案。
 
 本方案追求的是“最小闭环成立”，而不是“一步到位做完整产品”。
 
@@ -15,7 +15,7 @@ CLI MVP 必须具备：
 - 一个明确的 `generate` 主命令
 - 从本地读取标准输入 JSON
 - 对输入进行最小合同校验
-- 基于 `industrial-network-planner/` 的模板与规则装配 Markdown 文档
+- 基于 `industrial-network-planner/` 的模板与规则装配 HTML 文档
 - 输出到本地文件
 - 对失败场景提供清晰错误信息
 
@@ -38,7 +38,7 @@ CLI MVP 暂不处理：
 
 1. 准备标准输入 JSON
 2. 执行一条命令
-3. 在 `output/` 中拿到 Markdown 方案
+3. 在 `output/` 中拿到正式 HTML 方案
 
 理想最小示例：
 
@@ -50,28 +50,26 @@ planner generate --input industrial-network-planner/examples/standard-input-exam
 
 - 命令成功退出
 - 控制台打印输出路径与摘要
-- `output/` 中生成一份可审阅的 Markdown 方案
+- `output/` 中生成一份可审阅的 HTML 方案
 
 ## 4. 推荐命令接口
 
 ### 4.1 主命令
 
 ```bash
-planner generate --input <path> [--output <path>] [--strict] [--stdout]
+planner generate --input <path> [--output <path>] [--strict]
 ```
 
 ### 4.2 参数说明
 
 - `--input`：标准输入 JSON 文件路径，必填
-- `--output`：输出 Markdown 文件路径，选填
+- `--output`：输出 HTML 文件路径，选填
 - `--strict`：严格模式；遇到非阻断缺口也直接失败，选填
-- `--stdout`：将结果输出到标准输出而非文件，选填
 
 ### 4.3 行为约束
 
 - `--input` 必须指向本地文件
 - `--output` 缺省时自动落到 `output/`
-- `--stdout` 与 `--output` 同时出现时，应优先定义明确规则，建议二选一，否则报参数冲突
 
 ## 5. 内部处理链路
 
@@ -134,17 +132,17 @@ CLI MVP 建议采用以下处理链路：
 
 这一层应成为后续 Web / API 宿主可复用的核心编排边界。
 
-### Step 6：Markdown 装配
+### Step 6：HTML 装配
 
 输出：
 
-- 完整 Markdown 文本
+- 完整 HTML 文本
 
 ### Step 7：结果输出
 
 输出：
 
-- 写入文件或输出到 stdout
+- 写入正式 HTML 文件
 - 返回执行摘要
 
 ## 6. 模块划分建议
@@ -156,8 +154,7 @@ CLI MVP 建议采用以下处理链路：
 - `validation`：输入合同校验
 - `skill-loader`：加载模板和规则资产
 - `planner`：构建中间规划结果
-- `renderer`：渲染 Markdown
-- `writer`：写入输出文件
+- `formal-support`：支撑正式 HTML 章节装配
 
 即使第一版代码量不大，也建议按职责拆开，避免“全部逻辑都在 main 里”。
 
@@ -191,20 +188,20 @@ CLI 输出文档时应遵守以下原则：
 
 输出目标：
 
-- `output/standard-input-example-solution.md`
+- `output/standard-input-example-solution.html`
 
 评估标准：
 
 - 是否能覆盖 `report-outline.md` 的主要章节
 - 是否能把输入中的不确定项转成假设/待确认项
-- 是否能形成一份结构完整、可读的 Markdown
+- 是否能形成一份结构完整、可读的 HTML
 
 ## 9. 实现语言建议
 
 在未受宿主限制的前提下，第一版实现语言应优先考虑：
 
 - 文件处理方便
-- Markdown 输出方便
+- HTML 输出更贴近正式交付
 - CLI 参数解析轻量
 - 后续易扩展
 
@@ -225,7 +222,7 @@ CLI MVP 完成后，建议按以下方向逐步演进：
 ### 阶段 A：稳定 CLI 核心链路
 
 - 完善校验规则
-- 提升 Markdown 结构质量
+- 提升 HTML 交付质量
 - 固化中间结果模型
 
 ### 阶段 B：引入 adapter 串接

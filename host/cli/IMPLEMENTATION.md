@@ -41,10 +41,9 @@ host/cli/
       phrasing.py
       planner.py
       prose.py
-      renderer.py
+      formal_support.py
       rule_topics.py
       validation.py
-      writer.py
 ```
 
 ## 当前实现能力
@@ -54,9 +53,8 @@ host/cli/
 - `generate` 子命令
 - `--input`
 - `--output`
-- `--stdout`
 - `--strict`
-- 基于标准输入样例生成 Markdown
+- 基于标准输入样例生成正式 HTML
 - 按 `report-outline` 13 章结构输出
 - 每章输出章节摘要、章节结论、目标、输入来源、规则主题、适用前提、闭环条件
 - 条目级来源标注
