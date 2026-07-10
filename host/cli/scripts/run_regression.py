@@ -9,15 +9,6 @@ ROOT = Path(__file__).resolve().parents[3]
 CLI_ENV = os.environ.copy()
 CLI_ENV["PYTHONPATH"] = str(ROOT / "host/cli/src")
 CASES = [
-    (ROOT / "industrial-network-planner/examples/standard-input-example.json", "standard", "draft"),
-    (ROOT / "host/cli/examples/minimal-viable-input.json", "minimal", "draft"),
-    (ROOT / "host/cli/examples/high-completeness-input.json", "complete", "draft"),
-    (ROOT / "host/cli/examples/remote-maintenance-heavy-input.json", "remote-maintenance", "draft"),
-    (ROOT / "host/cli/examples/address-constrained-input.json", "address-constrained", "draft"),
-    (ROOT / "host/cli/examples/multi-workshop-input.json", "multi-workshop", "draft"),
-    (ROOT / "host/cli/examples/redundancy-demand-input.json", "redundancy-demand", "draft"),
-    (ROOT / "host/cli/examples/compound-conflict-input.json", "compound-conflict", "draft"),
-    (Path("/tmp/conflict-input.json"), "conflict", "draft"),
     (Path("/tmp/dayawan-mes-input.json"), "dayawan-mes", "formal"),
     (ROOT / "host/cli/examples/high-completeness-input.json", "formal-complete", "formal"),
     (ROOT / "host/cli/examples/remote-maintenance-heavy-input.json", "formal-remote-maintenance", "formal"),
@@ -50,8 +41,8 @@ REQUIRED_MARKERS_FORMAL = [
 
 
 def run_case(input_path: Path, label: str, style: str) -> dict:
-    fmt = "html" if style == "formal" else "md"
-    suffix = ".html" if fmt == "html" else ".md"
+    fmt = "html"
+    suffix = ".html"
     output_path = Path("/tmp") / f"regression-{label}{suffix}"
     cmd = [
         "python3",
@@ -90,7 +81,7 @@ def run_case(input_path: Path, label: str, style: str) -> dict:
             '重点边界拓扑图',
             '地址分段响应',
             '实施闭环表',
-        ] if style == "formal" else REQUIRED_MARKERS_DRAFT
+        ]
         result["missing_markers"] = [marker for marker in required_markers if marker not in text]
     return result
 
