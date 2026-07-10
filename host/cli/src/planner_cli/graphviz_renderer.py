@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import subprocess
-import tempfile
 from pathlib import Path
 
 from planner_cli.document_model import DiagramBlock
-from planner_cli.graphviz_support import has_graphviz
+from planner_cli.graphviz_support import get_graphviz_workdir, has_graphviz, resolve_graphviz_dot
 
 
 def _dot_id(value: str) -> str:
@@ -166,17 +165,18 @@ def build_diagram_dot(diagram: DiagramBlock) -> tuple[str, str | None]:
 
 
 def render_diagram_svg_graphviz(diagram: DiagramBlock) -> str:
-    if not has_graphviz():
+    dot_cmd = resolve_graphviz_dot()
+    if dot_cmd is None:
         return ''
     dot, error = build_diagram_dot(diagram)
     if error:
         raise RuntimeError(error)
-    with tempfile.TemporaryDirectory(prefix='planner-dot-') as tmpdir:
-        dot_path = Path(tmpdir) / 'graph.dot'
-        svg_path = Path(tmpdir) / 'graph.svg'
-        dot_path.write_text(dot, encoding='utf-8')
-        subprocess.run(['dot', '-Tsvg', str(dot_path), '-o', str(svg_path)], check=True, capture_output=True)
-        return svg_path.read_text(encoding='utf-8')
+    workdir = get_graphviz_workdir()
+    dot_path = workdir / 'graph.dot'
+    svg_path = workdir / 'graph.svg'
+    dot_path.write_text(dot, encoding='utf-8')
+    subprocess.run([str(dot_cmd), '-Tsvg', str(dot_path), '-o', str(svg_path)], check=True, capture_output=True)
+    return svg_path.read_text(encoding='utf-8')
 
 
 def render_diagram_svg_auto(diagram: DiagramBlock) -> tuple[str, str | None]:

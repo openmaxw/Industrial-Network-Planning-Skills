@@ -3,13 +3,12 @@ from __future__ import annotations
 import math
 import re
 import subprocess
-import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 from planner_cli.document_model import DiagramBlock
-from planner_cli.graphviz_support import has_graphviz
+from planner_cli.graphviz_support import get_graphviz_workdir, has_graphviz, resolve_graphviz_dot
 
 WIDTH = 2200
 HEIGHT = 1400
